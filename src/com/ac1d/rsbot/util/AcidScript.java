@@ -40,6 +40,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         mPollCount++;
         if(Random.percent(95) && (mPollCount % 2 == 0 || Random.percent(5))) {
             // Usually skip every other poll
+            state = "Skipping tick";
             return;
         }
 

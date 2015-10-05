@@ -4,6 +4,7 @@ import com.ac1d.rsbot.util.*;
 import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
+import org.powerbot.script.rt6.MobileIdNameQuery;
 import org.powerbot.script.rt6.Player;
 
 public class Course {
@@ -43,9 +44,35 @@ public class Course {
                     Areas.rect(1, 2915, 3354, 2917, 3553))
     );
 
-    private final Obstacle[] obstacles;
+    public static final Course BARBARIAN_OUTPOST = new Course(
+            "Barbarian Outpost", Areas.rect(2555, 3559, 2528, 3542),
+            new Obstacle("Swing-on", "Rope swing", 43526,
+                    Areas.rect(2554, 3559, 2546, 3550)), //TODO: Add obstacle for fail ladder
+            new Obstacle("Walk-across", "Log balance", 43595,
+                    Areas.rect(2554, 3549, 2549, 3543)), //TODO: Find/Add failure area
+            new Obstacle("Climb over", "Obstacle net", 20211,
+                    Areas.rect(2541, 3549, 2539, 3543)), // TODO: Find/Add failure area for balancing ledge
+            new Obstacle("Walk-across", "Balancing ledge", 2302,
+                    Areas.rect(1, 2538, 3547, 2536, 3545)),
+            new Obstacle("Climb-down", "Ladder", 3205,
+                    Areas.rect(1, 2532, 3547, 2532, 3546)),
+            new Obstacle("Climb-over", "Crumbling wall", 1948,
+                    Areas.rect(2532, 3546, 2537, 3555)),
+            new Obstacle("Climb-over", "Crumbling wall", 1948, false,
+                    Areas.rect(2538, 3552, 2542, 3554))
+    );
+
+    public static final Course[] ALL = {
+            GNOME_STRONGHOLD,
+            BURTHORPE,
+            BARBARIAN_OUTPOST,
+    };
+
+    public final Area courseArea;
+    public final Obstacle[] obstacles;
 
     protected Course(String name, Area courseArea, Obstacle... obstacles) {
+        this.courseArea = courseArea;
         this.obstacles = obstacles;
     }
 
@@ -58,12 +85,18 @@ public class Course {
         public final String action;
         public final int id;
         public final Area[] areas;
+        public boolean nearest;
 
         public Obstacle(String action, String name, int id, Area... areas) {
+            this(action, name, id, true, areas);
+        }
+
+        public Obstacle(String action, String name, int id, boolean nearest, Area... areas) {
             this.name = name;
             this.action = action;
             this.id = id;
             this.areas = areas;
+            this.nearest = nearest;
         }
     }
 
@@ -95,7 +128,15 @@ public class Course {
                 return "Finding obstacle";
             }
 
-            final GameObject obj = ctx.objects.select().id(o.id).nearest().poll();
+            final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(o.id).nearest();
+            GameObject obj = q.poll();
+            if(!o.nearest) {
+                // Get furthest
+                while(q.peek() != null) {
+                    obj = q.poll();
+                }
+            }
+
             if(obj == null) {
                 done();
                 return "Finding obstacle";
@@ -112,26 +153,6 @@ public class Course {
                 return "Interacting";
             } else {
                 return "Waiting to interact";
-            }
-        }
-    }
-
-    public static class Manager extends CycleTaskManager<ClientContext> {
-        private Course mCourse;
-
-        public Manager(ClientContext ctx) {
-            super(ctx);
-        }
-
-        public void setCourse(Course course) {
-            if(mCourse == course) {
-                return;
-            }
-            mCourse = course;
-
-            clearTasks();
-            for(Obstacle o : mCourse.getObstacles()) {
-                addTask(new ObstacleTask(ctx, o));
             }
         }
     }
