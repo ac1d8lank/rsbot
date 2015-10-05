@@ -46,6 +46,7 @@ public class Course {
                     Areas.rect(1, 2915, 3354, 2917, 3553))
     );
 
+    //TODO: Add low-hp resting state, add zones for initial tube crawl-thru
     public static final Course BARBARIAN_OUTPOST = new Course(
             "Barbarian Outpost", new Area[] {Areas.rect(2555, 3559, 2528, 3542), Areas.rect(2546, 9955, 2555, 9948)},
             new Obstacle("Swing-on", "Rope swing", 43526,
