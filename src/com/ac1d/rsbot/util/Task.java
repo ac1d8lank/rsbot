@@ -30,7 +30,7 @@ public abstract class Task<C extends ClientContext> extends ClientAccessor<C> {
     /**
      * Mark this Task as done
      */
-    protected void done() {
+    public void done() {
         mDone = true;
     }
 }

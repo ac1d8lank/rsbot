@@ -51,13 +51,14 @@ public class Course {
             new Obstacle("Walk-across", "Log balance", 43595,
                     Areas.rect(2554, 3549, 2549, 3543)),
             new Obstacle("Climb over", "Obstacle net", 20211,
-                    Areas.rect(2545, 3549, 2539, 3542)), // TODO: Find/Add failure area for balancing ledge
+                    Areas.rect(2545, 3549, 2539, 3542)),
             new Obstacle("Walk-across", "Balancing ledge", 2302,
                     Areas.rect(1, 2538, 3547, 2536, 3545)),
+            new Move(Areas.rect(2533, 3545, 2538, 3547), Areas.rect(2539, 3544, 2541, 3548)),
             new Obstacle("Climb-down", "Ladder", 3205,
                     Areas.rect(1, 2532, 3547, 2532, 3546)),
             new Obstacle("Climb-over", "Crumbling wall", 1948,
-                    Areas.rect(2532, 3546, 2537, 3555)),
+                    Areas.rect(2532, 3546, 2532, 3547), Areas.rect(2532, 3548, 2537, 3555)),
             new Obstacle("Climb-over", "Crumbling wall", 1948, false,
                     Areas.rect(2538, 3552, 2542, 3554))
     );
@@ -70,19 +71,48 @@ public class Course {
 
     public final String name;
     public final Area courseArea;
-    public final Obstacle[] obstacles;
+    public final Action[] actions;
 
-    protected Course(String name, Area courseArea, Obstacle... obstacles) {
+    protected Course(String name, Area courseArea, Action... actions) {
         this.name = name;
         this.courseArea = courseArea;
-        this.obstacles = obstacles;
+        this.actions = actions;
     }
 
-    public Obstacle[] getObstacles() {
-        return obstacles;
+    public Action[] getActions() {
+        return actions;
+    }
+    
+    public abstract static class Action {
+        public abstract String perform(ClientContext ctx, CourseTask task);
     }
 
-    public static class Obstacle {
+    public static class Move extends Action {
+
+        private final Area from;
+        private final Area to;
+
+        public Move(Area from, Area to) {
+            this.from = from;
+            this.to = to;
+        }
+
+
+        @Override
+        public String perform(ClientContext ctx, CourseTask task) {
+            final Player p = ctx.players.local();
+
+            if(!from.contains(p)) {
+                task.done();
+                return "Finding obstacle";
+            }
+
+            ctx.movement.findPath(to.getRandomTile()).traverse();
+            return "Moving";
+        }
+    }
+
+    public static class Obstacle extends Action {
         public final String name;
         public final String action;
         public final int id;
@@ -100,14 +130,58 @@ public class Course {
             this.areas = areas;
             this.nearest = nearest;
         }
+
+        @Override
+        public String perform(ClientContext ctx, CourseTask task) {
+            final Player p = ctx.players.local();
+
+            boolean inArea = false;
+            for(Area a : areas) {
+                if(a.contains(p)) {
+                    inArea = true;
+                    break;
+                }
+            }
+            if(!inArea) {
+                task.done();
+                return "Finding obstacle";
+            }
+
+            final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(id).nearest();
+            GameObject obj = q.poll();
+            if(!nearest) {
+                // Get furthest
+                for(GameObject o : q) {
+                    obj = o;
+                }
+            }
+
+            if(obj == null) {
+                task.done();
+                return "Finding obstacle";
+            }
+
+            if(!obj.inViewport() || Random.oneIn(3)) {
+                ctx.camera.turnTo(obj);
+                return "Moving camera";
+            }
+
+
+            if(obj.interact(action, name)) {
+                task.done();
+                return "Interacting";
+            } else {
+                return "Waiting to interact";
+            }
+        }
     }
 
-    public static class ObstacleTask extends Task<ClientContext> {
-        private final Obstacle o;
+    public static class CourseTask extends Task<ClientContext> {
+        private final Action action;
 
-        public ObstacleTask(ClientContext ctx, Obstacle obstacle) {
+        public CourseTask(ClientContext ctx, Action action) {
             super(ctx);
-            this.o = obstacle;
+            this.action = action;
         }
 
         @Override
@@ -118,44 +192,7 @@ public class Course {
                 return "Player active";
             }
 
-            boolean inArea = false;
-            for(Area a : o.areas) {
-                if(a.contains(p)) {
-                    inArea = true;
-                    break;
-                }
-            }
-            if(!inArea) {
-                done();
-                return "Finding obstacle";
-            }
-
-            final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(o.id).nearest();
-            GameObject obj = q.poll();
-            if(!o.nearest) {
-                // Get furthest
-                for(GameObject o : q) {
-                    obj = o;
-                }
-            }
-
-            if(obj == null) {
-                done();
-                return "Finding obstacle";
-            }
-
-            if(!obj.inViewport() || Random.oneIn(3)) {
-                ctx.camera.turnTo(obj);
-                return "Moving camera";
-            }
-
-
-            if(obj.interact(o.action, o.name)) {
-                done();
-                return "Interacting";
-            } else {
-                return "Waiting to interact";
-            }
+            return action.perform(ctx, this);
         }
     }
 }

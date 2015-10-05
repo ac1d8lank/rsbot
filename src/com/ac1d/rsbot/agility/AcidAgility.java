@@ -57,8 +57,8 @@ public class AcidAgility extends AcidScript<ClientContext> {
                 return;
             }
 
-            for(Course.Obstacle o : mmCourse.getObstacles()) {
-                addTask(new Course.ObstacleTask(ctx, o));
+            for(Course.Action a : mmCourse.getActions()) {
+                addTask(new Course.CourseTask(ctx, a));
             }
         }
     }
