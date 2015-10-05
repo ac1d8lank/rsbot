@@ -49,9 +49,9 @@ public class Course {
             new Obstacle("Swing-on", "Rope swing", 43526,
                     Areas.rect(2554, 3559, 2543, 3550)), //TODO: Add obstacle for fail ladder
             new Obstacle("Walk-across", "Log balance", 43595,
-                    Areas.rect(2554, 3549, 2549, 3543)), //TODO: Find/Add failure area
+                    Areas.rect(2554, 3549, 2549, 3543)),
             new Obstacle("Climb over", "Obstacle net", 20211,
-                    Areas.rect(2541, 3549, 2539, 3543)), // TODO: Find/Add failure area for balancing ledge
+                    Areas.rect(2545, 3549, 2539, 3542)), // TODO: Find/Add failure area for balancing ledge
             new Obstacle("Walk-across", "Balancing ledge", 2302,
                     Areas.rect(1, 2538, 3547, 2536, 3545)),
             new Obstacle("Climb-down", "Ladder", 3205,
