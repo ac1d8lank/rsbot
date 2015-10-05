@@ -9,6 +9,8 @@ import java.awt.*;
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener {
 
     private Task mCurrentTask;
+    private long mPollCount = 0;
+
     protected String state;
 
     protected static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
@@ -35,6 +37,12 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public void poll() {
+        mPollCount++;
+        if(Random.percent(95) && (mPollCount % 2 == 0 || Random.percent(5))) {
+            // Usually skip every other poll
+            return;
+        }
+
         if(mCurrentTask == null || mCurrentTask.isDone()) {
             mCurrentTask = getTaskManager().nextTask();
             if(mCurrentTask == null) {

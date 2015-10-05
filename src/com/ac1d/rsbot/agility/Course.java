@@ -1,9 +1,6 @@
 package com.ac1d.rsbot.agility;
 
-import com.ac1d.rsbot.util.Areas;
-import com.ac1d.rsbot.util.CycleTaskManager;
-import com.ac1d.rsbot.util.Task;
-import com.ac1d.rsbot.util.TaskManager;
+import com.ac1d.rsbot.util.*;
 import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
@@ -104,16 +101,17 @@ public class Course {
                 return "Finding obstacle";
             }
 
-            if(obj.inViewport()) {
-                if(obj.interact(o.action, o.name)) {
-                    done();
-                    return "Interacting";
-                } else {
-                    return "Waiting to interact";
-                }
-            } else {
+            if(!obj.inViewport() || Random.oneIn(3)) {
                 ctx.camera.turnTo(obj);
                 return "Moving camera";
+            }
+
+
+            if(obj.interact(o.action, o.name)) {
+                done();
+                return "Interacting";
+            } else {
+                return "Waiting to interact";
             }
         }
     }
