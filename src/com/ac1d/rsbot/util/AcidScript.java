@@ -8,7 +8,7 @@ import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener {
 
-    private Task mCurrentTask;
+    private Task<C> mCurrentTask;
     private long mPollCount = 0;
 
     protected String state;
@@ -51,7 +51,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
                 }
                 mCurrentTask.reset();
             } else {
-                state = mCurrentTask.tick();
+                state = mCurrentTask.tick(ctx);
             }
         } while(mCurrentTask.wasSkipped() || mCurrentTask.onCooldown());
     }
@@ -67,5 +67,5 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         // STUB
     }
 
-    public abstract TaskManager getTaskManager();
+    public abstract TaskManager<C> getTaskManager();
 }

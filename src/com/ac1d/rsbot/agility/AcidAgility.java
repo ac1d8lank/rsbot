@@ -21,7 +21,7 @@ public class AcidAgility extends AcidScript<ClientContext> {
     }
 
     @Override
-    public TaskManager getTaskManager() {
+    public TaskManager<ClientContext> getTaskManager() {
         return mManager;
     }
 
@@ -36,7 +36,7 @@ public class AcidAgility extends AcidScript<ClientContext> {
         if(state != null) {
             g.drawString("State: "+ state, 5, 45);
         }
-        if(state != null && mManager.mmCourse != null) {
+        if(mManager.mmCourse != null) {
             g.drawString("Course: "+ mManager.mmCourse.name, 5, 65);
         }
     }
@@ -58,15 +58,14 @@ public class AcidAgility extends AcidScript<ClientContext> {
             }
 
             if(mmCourse == null) {
-                //TODO: make sure this works
                 //TODO: pop up a dialog explaining where to start the script
                 // We aren't in a course :(
-                stop();
+                ctx.controller.stop();
                 return;
             }
 
             for(Course.Action a : mmCourse.getActions()) {
-                addTask(new Course.CourseTask(ctx, a));
+                addTask(a);
             }
         }
     }

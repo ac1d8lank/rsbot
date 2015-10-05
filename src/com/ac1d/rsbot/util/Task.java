@@ -3,21 +3,18 @@ package com.ac1d.rsbot.util;
 import org.powerbot.script.ClientAccessor;
 import org.powerbot.script.ClientContext;
 
-public abstract class Task<C extends ClientContext> extends ClientAccessor<C> {
+public abstract class Task<C extends ClientContext> {
 
     private boolean mDone;
     private long mCooldownOverTime;
     private boolean mSkipped;
 
-    public Task(C ctx) {
-        super(ctx);
-    }
 
     /**
      * Allow this Task to perform some non-blocking work.
      * @return the state of this task
      */
-    public abstract String tick();
+    public abstract String tick(C ctx);
 
     /**
      * Sets a cooldown on this task, this instance will be skipped until the cooldown ends.

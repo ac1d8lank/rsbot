@@ -93,11 +93,6 @@ public class Course {
     }
 
     //TODO: split these out into separate class files
-    //TODO: combine `Action` and `CourseTask`
-    public abstract static class Action {
-        public abstract String perform(ClientContext ctx, CourseTask task);
-    }
-
     public static class Move extends Action {
 
         private final Area from;
@@ -110,11 +105,11 @@ public class Course {
 
 
         @Override
-        public String perform(ClientContext ctx, CourseTask task) {
+        public String perform(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             if(!from.contains(p)) {
-                task.skip();
+                skip();
                 return "Not in area";
             }
 
@@ -144,7 +139,7 @@ public class Course {
         }
 
         @Override
-        public String perform(ClientContext ctx, CourseTask task) {
+        public String perform(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             boolean inArea = false;
@@ -155,7 +150,7 @@ public class Course {
                 }
             }
             if(!inArea) {
-                task.skip();
+                skip();
                 return "Not in area";
             }
 
@@ -169,7 +164,7 @@ public class Course {
             }
 
             if(obj == null) {
-                task.skip();
+                skip();
                 return "Couldn't find object";
             }
 
@@ -180,7 +175,7 @@ public class Course {
 
 
             if(obj.interact(action, name)) {
-                task.done();
+                done();
                 return "Interacting";
             } else {
                 return "Waiting to interact";
@@ -188,23 +183,19 @@ public class Course {
         }
     }
 
-    public static class CourseTask extends Task<ClientContext> {
-        private final Action action;
+    public abstract static class Action extends Task<ClientContext> {
 
-        public CourseTask(ClientContext ctx, Action action) {
-            super(ctx);
-            this.action = action;
-        }
+        public abstract String perform(ClientContext ctx);
 
         @Override
-        public String tick() {
+        public String tick(ClientContext ctx) {
             final Player p = ctx.players.local();
             if(p.inMotion() || p.animation() != -1) {
                 // We're running or animating, wait.
                 return "Player active";
             }
 
-            return action.perform(ctx, this);
+            return perform(ctx);
         }
 
         @Override
