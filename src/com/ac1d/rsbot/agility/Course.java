@@ -47,7 +47,7 @@ public class Course {
     public static final Course BARBARIAN_OUTPOST = new Course(
             "Barbarian Outpost", Areas.rect(2555, 3559, 2528, 3542),
             new Obstacle("Swing-on", "Rope swing", 43526,
-                    Areas.rect(2554, 3559, 2546, 3550)), //TODO: Add obstacle for fail ladder
+                    Areas.rect(2554, 3559, 2543, 3550)), //TODO: Add obstacle for fail ladder
             new Obstacle("Walk-across", "Log balance", 43595,
                     Areas.rect(2554, 3549, 2549, 3543)), //TODO: Find/Add failure area
             new Obstacle("Climb over", "Obstacle net", 20211,
@@ -68,10 +68,12 @@ public class Course {
             BARBARIAN_OUTPOST,
     };
 
+    public final String name;
     public final Area courseArea;
     public final Obstacle[] obstacles;
 
     protected Course(String name, Area courseArea, Obstacle... obstacles) {
+        this.name = name;
         this.courseArea = courseArea;
         this.obstacles = obstacles;
     }

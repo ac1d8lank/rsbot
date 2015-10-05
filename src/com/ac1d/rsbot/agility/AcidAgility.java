@@ -24,13 +24,16 @@ public class AcidAgility extends AcidScript<ClientContext> {
     @Override
     public void drawUI(Graphics2D g) {
         g.setColor(Color.yellow);
-        g.fillRect(0, 0, 400, 50);
+        g.fillRect(0, 0, 400, 70);
 
         g.setColor(Color.black);
         g.setFont(SANS);
         g.drawString("AcidScript", 5, 25);
         if(state != null) {
             g.drawString("State: "+ state, 5, 45);
+        }
+        if(state != null) {
+            g.drawString("Course: "+ mManager.mmCourse.name, 5, 65);
         }
     }
 
