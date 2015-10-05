@@ -13,6 +13,10 @@ public abstract class Task<C extends ClientContext> extends ClientAccessor<C> {
         super(ctx);
     }
 
+    /**
+     * Allow this Task to perform some non-blocking work.
+     * @return the state of this task
+     */
     public abstract String tick();
 
     /**

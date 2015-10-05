@@ -93,6 +93,7 @@ public class Course {
     }
 
     //TODO: split these out into separate class files
+    //TODO: combine `Action` and `CourseTask`
     public abstract static class Action {
         public abstract String perform(ClientContext ctx, CourseTask task);
     }
@@ -117,6 +118,7 @@ public class Course {
                 return "Not in area";
             }
 
+            // TODO: don't always use minimap
             ctx.movement.findPath(to.getRandomTile()).traverse();
             return "Moving";
         }

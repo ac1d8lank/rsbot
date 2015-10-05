@@ -4,10 +4,17 @@ import org.powerbot.script.Area;
 import org.powerbot.script.Tile;
 
 public class Areas {
+    /**
+     * Creates an {@link Area} bounded by (x1, y1) and (x2, y2), inclusive
+     */
     public static Area rect(int x1, int y1, int x2, int y2) {
         return rect(0, x1, y1, x2, y2);
     }
 
+
+    /**
+     * Creates an {@link Area} bounded by (x1, y1) and (x2, y2) at z height, inclusive
+     */
     public static Area rect(int z, int x1, int y1, int x2, int y2) {
         final int w = Math.min(x1, x2);
         final int e = Math.max(x1, x2)+1; // E is exclusive

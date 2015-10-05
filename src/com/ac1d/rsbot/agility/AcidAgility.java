@@ -11,6 +11,9 @@ import java.awt.*;
 @Script.Manifest(name = "AcidAgility", description = "Agility Trainer")
 public class AcidAgility extends AcidScript<ClientContext> {
 
+    /** Acid on the eyes */
+    protected static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
+
     private Manager mManager;
 
     public AcidAgility() {
@@ -55,6 +58,8 @@ public class AcidAgility extends AcidScript<ClientContext> {
             }
 
             if(mmCourse == null) {
+                //TODO: make sure this works
+                //TODO: pop up a dialog explaining where to start the script
                 // We aren't in a course :(
                 stop();
                 return;

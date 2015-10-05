@@ -13,8 +13,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     protected String state;
 
-    protected static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
-
     @Override
     public void start() {
         state = "Starting";
