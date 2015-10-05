@@ -8,6 +8,8 @@ import org.powerbot.script.rt6.MobileIdNameQuery;
 import org.powerbot.script.rt6.Player;
 
 public class Course {
+    //TODO: simplify these constructors with a builder
+
     public static final Course GNOME_STRONGHOLD = new Course(
             "Gnome Stronghold", Areas.rect(2469, 3440, 2490, 3414),
             new Obstacle("Walk-across", "Log balance", 69526,
@@ -45,9 +47,11 @@ public class Course {
     );
 
     public static final Course BARBARIAN_OUTPOST = new Course(
-            "Barbarian Outpost", Areas.rect(2555, 3559, 2528, 3542),
+            "Barbarian Outpost", new Area[] {Areas.rect(2555, 3559, 2528, 3542), Areas.rect(2546, 9955, 2555, 9948)},
             new Obstacle("Swing-on", "Rope swing", 43526,
-                    Areas.rect(2554, 3559, 2543, 3550)), //TODO: Add obstacle for fail ladder
+                    Areas.rect(2554, 3559, 2543, 3550)),
+            new Obstacle("Climb-up", "Ladder", 32015,
+                    Areas.rect(2546, 9955, 2555, 9948)),
             new Obstacle("Walk-across", "Log balance", 43595,
                     Areas.rect(2554, 3549, 2549, 3543)),
             new Obstacle("Climb over", "Obstacle net", 20211,
@@ -70,19 +74,24 @@ public class Course {
     };
 
     public final String name;
-    public final Area courseArea;
+    public final Area[] courseAreas;
     public final Action[] actions;
 
     protected Course(String name, Area courseArea, Action... actions) {
+        this(name, new Area[]{courseArea}, actions);
+    }
+
+    protected Course(String name, Area[] courseAreas, Action... actions) {
         this.name = name;
-        this.courseArea = courseArea;
+        this.courseAreas = courseAreas;
         this.actions = actions;
     }
 
     public Action[] getActions() {
         return actions;
     }
-    
+
+    //TODO: split these out into separate class files
     public abstract static class Action {
         public abstract String perform(ClientContext ctx, CourseTask task);
     }

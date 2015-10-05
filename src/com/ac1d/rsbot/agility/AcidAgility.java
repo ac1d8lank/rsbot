@@ -1,6 +1,7 @@
 package com.ac1d.rsbot.agility;
 
 import com.ac1d.rsbot.util.*;
+import org.powerbot.script.Area;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Player;
@@ -32,7 +33,7 @@ public class AcidAgility extends AcidScript<ClientContext> {
         if(state != null) {
             g.drawString("State: "+ state, 5, 45);
         }
-        if(state != null) {
+        if(state != null && mManager.mmCourse != null) {
             g.drawString("Course: "+ mManager.mmCourse.name, 5, 65);
         }
     }
@@ -45,9 +46,11 @@ public class AcidAgility extends AcidScript<ClientContext> {
 
             Player p = ctx.players.local();
             for(Course c : Course.ALL) {
-                if(c.courseArea.contains(p)) {
-                    mmCourse = c;
-                    break;
+                for(Area a : c.courseAreas) {
+                    if (a.contains(p)) {
+                        mmCourse = c;
+                        break;
+                    }
                 }
             }
 
