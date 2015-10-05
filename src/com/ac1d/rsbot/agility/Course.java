@@ -132,8 +132,8 @@ public class Course {
             GameObject obj = q.poll();
             if(!o.nearest) {
                 // Get furthest
-                while(q.peek() != null) {
-                    obj = q.poll();
+                for(GameObject o : q) {
+                    obj = o;
                 }
             }
 
