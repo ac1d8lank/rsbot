@@ -6,7 +6,7 @@ import org.powerbot.script.rt6.ClientContext;
 
 import java.awt.*;
 
-@Script.Manifest(name = "AcidAgilitye", description = "Agility Trainer")
+@Script.Manifest(name = "AcidAgility", description = "Agility Trainer")
 public class AcidAgility extends AcidScript<ClientContext> {
 
     private Course.Manager mManager;
