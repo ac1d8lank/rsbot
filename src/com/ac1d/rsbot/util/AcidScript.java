@@ -40,19 +40,22 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         mPollCount++;
         if(Random.percent(95) && (mPollCount % 2 == 0 || Random.percent(5))) {
             // Usually skip every other poll
-            state = "Skipping tick";
             return;
         }
 
-        if(mCurrentTask == null || mCurrentTask.isDone()) {
-            mCurrentTask = getTaskManager().nextTask();
-            if(mCurrentTask == null) {
-                // Still nothing, so wait until next poll
-                return;
+        do {
+            if(mCurrentTask == null || mCurrentTask.isDone() || mCurrentTask.onCooldown()) {
+                // Ready a task for the next poll.
+                mCurrentTask = getTaskManager().nextTask();
+                if(mCurrentTask == null) {
+                    // Still nothing, so wait until next poll
+                    return;
+                }
+                mCurrentTask.reset();
+            } else {
+                state = mCurrentTask.tick();
             }
-            mCurrentTask.reset();
-        }
-        state = mCurrentTask.tick();
+        } while(mCurrentTask.wasSkipped() || mCurrentTask.onCooldown());
     }
 
     @Override

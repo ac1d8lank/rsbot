@@ -112,8 +112,8 @@ public class Course {
             final Player p = ctx.players.local();
 
             if(!from.contains(p)) {
-                task.done();
-                return "Finding obstacle";
+                task.skip();
+                return "Not in area";
             }
 
             ctx.movement.findPath(to.getRandomTile()).traverse();
@@ -152,8 +152,8 @@ public class Course {
                 }
             }
             if(!inArea) {
-                task.done();
-                return "Finding obstacle";
+                task.skip();
+                return "Not in area";
             }
 
             final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(id).nearest();
@@ -166,8 +166,8 @@ public class Course {
             }
 
             if(obj == null) {
-                task.done();
-                return "Finding obstacle";
+                task.skip();
+                return "Couldn't find object";
             }
 
             if(!obj.inViewport() || Random.oneIn(3)) {
@@ -202,6 +202,11 @@ public class Course {
             }
 
             return action.perform(ctx, this);
+        }
+
+        @Override
+        public long getCooldownMillis() {
+            return 1000;
         }
     }
 }
