@@ -1,1 +1,7 @@
 language: java
+
+script:
+ - ./gradlew build
+ - wget http://powerbot.org/download/ -O libs/latest.jar
+ - ./gradlew build
+ - rm libs/latest.jar

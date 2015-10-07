@@ -1,5 +1,9 @@
 apply plugin: 'java'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    if(file('libs/latest.jar').exists()) {
+        compile files('libs/latest.jar')
+    } else {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+    }
 }
