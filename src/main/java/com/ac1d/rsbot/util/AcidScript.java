@@ -102,7 +102,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     public void drawUI(Graphics2D g) {
         g.setColor(Color.yellow);
-        g.fillRect(0, 0, 400, 70);
+        g.fillRect(0, 0, 420, 70);
 
         g.setColor(Color.black);
         g.setFont(AcidAgility.SANS);

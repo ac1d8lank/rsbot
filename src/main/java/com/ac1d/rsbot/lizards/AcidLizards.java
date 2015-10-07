@@ -24,6 +24,11 @@ public class AcidLizards extends AcidScript<ClientContext>{
                 }
                 return super.tick(ctx);
             }
+
+            @Override
+            public long getCooldownMillis() {
+                return 2000;
+            }
         });
 
         // Pick up lizard
