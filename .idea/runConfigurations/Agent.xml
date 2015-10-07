@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Agent" type="JarApplication" factoryName="JAR Application" activateToolWindowBeforeRun="false" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
@@ -5,8 +6,6 @@
     <option name="VM_PARAMETERS" value="-Djava.search.path=$PROJECT_DIR$/out -Dsun.java2d.nodraw=true -Dcom.jagex.config=http://www.runescape.com/l=en/jav_config.ws -Xmx512m -Xss2m -XX:CompileThreshold=1500 -Xincgc -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -javaagent:$PROJECT_DIR$/libs/RSBot-7007.jar -Xdock:name=RSBot" />
     <option name="PROGRAM_PARAMETERS" value="runescape" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
-    <option name="ALTERNATIVE_JRE_PATH" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_71.jdk/Contents/Home/jre" />
     <envs />
     <method />
   </configuration>
