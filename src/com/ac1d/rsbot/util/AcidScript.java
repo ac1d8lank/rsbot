@@ -17,30 +17,30 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     private long mPollCount = 0;
 
-    protected String state;
+    protected String status;
     private boolean mRunning = false;
 
     @Override
     public void start() {
-        state = "Starting";
+        status = "Starting";
         mRunning = true;
     }
 
     @Override
     public void suspend() {
-        state = "Suspended";
+        status = "Suspended";
         mRunning = false;
     }
 
     @Override
     public void resume() {
-        state = "Resuming";
+        status = "Resuming";
         mRunning = true;
     }
 
     @Override
     public void stop() {
-        state = "Stopping";
+        status = "Stopping";
         mRunning = false;
     }
 
@@ -70,8 +70,9 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
             final Task.TickResult result = currentTask.tick(ctx);
 
-            switch(result.getStatus()) {
+            switch(result.getState()) {
                 case DONE:
+                    status = result.getDescription();
                     currentTask = null;
                     break;
                 case SKIP:
@@ -106,8 +107,8 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         g.setColor(Color.black);
         g.setFont(AcidAgility.SANS);
         g.drawString("AcidScript", 5, 25);
-        if(state != null) {
-            g.drawString("State: "+ state, 5, 45);
+        if(status != null) {
+            g.drawString("Status: "+ status, 5, 45);
         }
     }
 

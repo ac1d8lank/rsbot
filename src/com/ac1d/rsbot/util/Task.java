@@ -28,7 +28,7 @@ public abstract class Task<C extends ClientContext> {
         return System.currentTimeMillis() < mCooldownOverTime;
     }
 
-    public enum TickState {
+    public enum ResultState {
         /** Run next task, next tick (also wait for cooldown if used) **/
         DONE,
         /** Run next task, this tick **/
@@ -39,42 +39,34 @@ public abstract class Task<C extends ClientContext> {
 
     protected final TickResult done(String description) {
         mCooldownOverTime = System.currentTimeMillis() + getCooldownMillis();
-        return setResult(TickState.DONE, description);
+        return setResult(ResultState.DONE, description);
     }
 
     protected final TickResult skip(String description) {
-        return setResult(TickState.SKIP, description);
+        return setResult(ResultState.SKIP, description);
     }
 
     protected final TickResult retry(String description) {
-        return setResult(TickState.RETRY, description);
+        return setResult(ResultState.RETRY, description);
     }
 
-    private TickResult setResult(TickState status, String description) {
-        mResult.status = status;
+    private TickResult setResult(ResultState status, String description) {
+        mResult.state = status;
         mResult.description = description;
         return mResult;
     }
 
     public class TickResult {
         private TickResult() {}
-        private TickState status;
+        private ResultState state;
         private String description;
 
-        public TickState getStatus() {
-            return status;
+        public ResultState getState() {
+            return state;
         }
 
         public String getDescription() {
             return description;
-        }
-
-        private void setStatus(TickState status) {
-            this.status = status;
-        }
-
-        private void setDescription(String description) {
-            this.description = description;
         }
     }
 }
