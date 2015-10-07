@@ -1,9 +1,7 @@
 package com.ac1d.rsbot.util.rt6;
 
 import com.ac1d.rsbot.util.Task;
-import org.powerbot.script.Nillable;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.GroundItem;
 
 public class PickupTask extends Task<ClientContext> {
@@ -17,29 +15,27 @@ public class PickupTask extends Task<ClientContext> {
     }
 
     @Override
-    public String tick(ClientContext ctx) {
+    public TickResult tick(ClientContext ctx) {
         if(!ctx.players.local().idle()) {
-            skip();
-            return "Player busy";
+            return skip("Player busy");
         }
 
         GroundItem item = findGroundItem(ctx, mId);
         if(item == null || !item.valid()) {
-            skip();
-            return "Can't find " + mName;
+            return skip("Can't find " + mName);
         }
 
         if(!item.inViewport()) {
             ctx.camera.turnTo(item);
-            return "Looking towards " + mName;
+            return retry("Looking towards " + mName);
         }
 
         if(item.interact("Take", mName)) {
-            done();
-            return "Picking up " + mName;
+            return done("Picking up " + mName);
         }
 
-        return "Unable to pick up " + mName;
+        // TODO: this should be a retry with N attempts
+        return done("Unable to pick up " + mName);
     }
 
     protected GroundItem findGroundItem(ClientContext ctx, int id) {

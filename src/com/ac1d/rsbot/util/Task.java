@@ -1,51 +1,26 @@
 package com.ac1d.rsbot.util;
 
-import org.powerbot.script.ClientAccessor;
 import org.powerbot.script.ClientContext;
 
 public abstract class Task<C extends ClientContext> {
 
-    private boolean mDone;
     private long mCooldownOverTime;
-    private boolean mSkipped;
-
+    private TickResult mResult = new TickResult();
 
     /**
      * Allow this Task to perform some non-blocking work.
      * @return the state of this task
      */
-    public abstract String tick(C ctx);
+    public abstract TickResult tick(C ctx);
 
     /**
      * Sets a cooldown on this task, this instance will be skipped until the cooldown ends.
+     * Override to set a cooldown after done.
      * @return a cooldown in milliseconds.
      */
     public long getCooldownMillis() {
         return 0;
     }
-
-    /**
-     * Reset this task to be ready to run again
-     */
-    public void reset() {
-        mDone = false;
-        mSkipped = false;
-    }
-
-    /**
-     * @return whether this Task has completed
-     */
-    public final boolean isDone() {
-        return mDone;
-    }
-
-    /**
-     * @return whether skip was called to finish this task.
-     */
-    public boolean wasSkipped() {
-        return mSkipped;
-    }
-
     /**
      * @return true if this task is on cooldown
      */
@@ -53,20 +28,53 @@ public abstract class Task<C extends ClientContext> {
         return System.currentTimeMillis() < mCooldownOverTime;
     }
 
-    /**
-     * Mark this Task as done
-     */
-    public void done() {
-        mDone = true;
-        mSkipped = false;
-        mCooldownOverTime = System.currentTimeMillis() + getCooldownMillis();
+    public enum TickState {
+        /** Run next task, next tick (also wait for cooldown if used) **/
+        DONE,
+        /** Run next task, this tick **/
+        SKIP,
+        /** Run this task, next tick **/
+        RETRY,
     }
 
-    /**
-     * Mark this Task as done, and go to next task in same poll
-     */
-    public void skip() {
-        mDone = true;
-        mSkipped = true;
+    protected final TickResult done(String description) {
+        mCooldownOverTime = System.currentTimeMillis() + getCooldownMillis();
+        return setResult(TickState.DONE, description);
+    }
+
+    protected final TickResult skip(String description) {
+        return setResult(TickState.SKIP, description);
+    }
+
+    protected final TickResult retry(String description) {
+        return setResult(TickState.RETRY, description);
+    }
+
+    private TickResult setResult(TickState status, String description) {
+        mResult.status = status;
+        mResult.description = description;
+        return mResult;
+    }
+
+    public class TickResult {
+        private TickResult() {}
+        private TickState status;
+        private String description;
+
+        public TickState getStatus() {
+            return status;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        private void setStatus(TickState status) {
+            this.status = status;
+        }
+
+        private void setDescription(String description) {
+            this.description = description;
+        }
     }
 }

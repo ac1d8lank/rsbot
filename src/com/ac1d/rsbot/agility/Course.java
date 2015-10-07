@@ -107,17 +107,19 @@ public class Course {
 
 
         @Override
-        public String perform(ClientContext ctx) {
+        public TickResult perform(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             if(!from.contains(p)) {
-                skip();
-                return "Not in area";
+                return skip("Not in area");
             }
 
             // TODO: don't always use minimap
-            ctx.movement.findPath(to.getRandomTile()).traverse();
-            return "Moving";
+            if(ctx.movement.findPath(to.getRandomTile()).traverse()) {
+                return done("Moving");
+            } else {
+                return done("Failed to move");
+            }
         }
     }
 
@@ -141,7 +143,7 @@ public class Course {
         }
 
         @Override
-        public String perform(ClientContext ctx) {
+        public TickResult perform(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             boolean inArea = false;
@@ -152,8 +154,7 @@ public class Course {
                 }
             }
             if(!inArea) {
-                skip();
-                return "Not in area";
+                return skip("Not in area");
             }
 
             final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(id).nearest();
@@ -166,21 +167,19 @@ public class Course {
             }
 
             if(obj == null) {
-                skip();
-                return "Couldn't find object";
+                return skip("Couldn't find object");
             }
 
             if(!obj.inViewport() || Random.oneIn(3)) {
                 ctx.camera.turnTo(obj);
-                return "Moving camera";
+                retry("Moving camera");
             }
 
 
             if(obj.interact(action, name)) {
-                done();
-                return "Interacting";
+                return done("Interacting");
             } else {
-                return "Waiting to interact";
+                return done("Waiting to interact");
             }
         }
     }
@@ -194,14 +193,14 @@ public class Course {
            add(22640);
         }};
 
-        public abstract String perform(ClientContext ctx);
+        public abstract TickResult perform(ClientContext ctx);
 
         @Override
-        public String tick(ClientContext ctx) {
+        public TickResult tick(ClientContext ctx) {
             final Player p = ctx.players.local();
             if(p.inMotion() || !idleAnimations.contains(p.animation())) {
                 // We're running or animating, wait.
-                return "Player active";
+                return retry("Player active");
             }
 
             return perform(ctx);

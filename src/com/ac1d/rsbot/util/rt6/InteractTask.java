@@ -17,29 +17,26 @@ public class InteractTask extends Task<ClientContext> {
     }
 
     @Override
-    public String tick(ClientContext ctx) {
+    public TickResult tick(ClientContext ctx) {
         if(!ctx.players.local().idle()) {
-            skip();
-            return "Player busy";
+            return retry("Player busy");
         }
 
         GameObject obj = getGameObject(ctx, mId);
         if(obj == null || !obj.valid()) {
-            skip();
-            return "Can't find " + mOption;
+            return skip("Can't find "+mAction+" "+mOption);
         }
 
         if(!obj.inViewport()) {
             ctx.camera.turnTo(obj);
-            return "Looking towards " + mOption;
+            return retry("Looking towards "+mAction+" "+mOption);
         }
 
         if(obj.interact(mAction, mOption)) {
-            done();
-            return "Interacting";
+            return done("Interacting: "+mAction+" "+mOption);
         }
 
-        return "Unable to interact";
+        return done("Unable to interact: "+mAction+" "+mOption);
     }
 
     protected GameObject getGameObject(ClientContext ctx, int id) {

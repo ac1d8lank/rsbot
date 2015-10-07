@@ -18,10 +18,9 @@ public class AcidLizards extends AcidScript<ClientContext>{
         // Set traps
         mManager.addTask(new InteractTask(19679, "Set-trap", "Young tree") {
             @Override
-            public String tick(ClientContext ctx) {
+            public TickResult tick(ClientContext ctx) {
                 if(trapsInInventory() == 0) {
-                    done();
-                    return "No Traps";
+                    return skip("No Traps");
                 }
                 return super.tick(ctx);
             }

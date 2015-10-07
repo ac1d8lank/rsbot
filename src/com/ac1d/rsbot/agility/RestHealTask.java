@@ -6,20 +6,20 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Player;
 
 public class RestHealTask extends Task<ClientContext> {
-    public static int lastRestingAnimation;
 
     @Override
-    public String tick(ClientContext ctx) {
+    public TickResult tick(ClientContext ctx) {
         final Player p = ctx.players.local();
         if(PlayerUtils.getHealthPercent(ctx) == 100) {
-            done();
-            return "Healed";
+            return done("Healed");
         }
         if(p.animation() == -1) {
-            ctx.widgets.component(1465, 47).interact("Rest");
-            return "Clicking rest";
+            if(ctx.widgets.component(1465, 47).interact("Rest")) {
+                return retry("Clicking rest");
+            } else {
+                return done("Failed to click rest");
+            }
         }
-        lastRestingAnimation = p.animation();
-        return "Resting";
+        return retry("Resting");
     }
 }

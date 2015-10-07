@@ -8,30 +8,40 @@ import org.powerbot.script.PollingScript;
 import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener {
+    /*
+     * Might want to make this a stack?
+     * If override returns a RETRY, would we want to retry both? Or are we okay with knocking it out
+     * If we knock it out, make sure to reset any kind of retry counter
+     */
+    private Task<C> mNextTickTask;
 
-    private Task<C> mCurrentTask;
     private long mPollCount = 0;
 
     protected String state;
+    private boolean mRunning = false;
 
     @Override
     public void start() {
         state = "Starting";
+        mRunning = true;
     }
 
     @Override
     public void suspend() {
         state = "Suspended";
+        mRunning = false;
     }
 
     @Override
     public void resume() {
         state = "Resuming";
+        mRunning = true;
     }
 
     @Override
     public void stop() {
         state = "Stopping";
+        mRunning = false;
     }
 
     @Override
@@ -42,23 +52,48 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
             return;
         }
 
+        Task<C> currentTask;
+        //TODO: see if the manager has an override first
+        if(mNextTickTask != null) {
+            currentTask = mNextTickTask;
+            mNextTickTask = null;
+        } else {
+            currentTask = nextTask();
+        }
+
         //TODO only check each task once (break after complete cycle)
-        do {
-            while(mCurrentTask == null || mCurrentTask.isDone() || mCurrentTask.onCooldown()) {
-                // Ready a task for the next poll.
-                mCurrentTask = getTaskManager().nextTask();
-                if(mCurrentTask == null) {
-                    // Still nothing, so wait until next poll
-                    return;
-                }
-                mCurrentTask.reset();
+        while(mRunning && currentTask != null) {
+            if(currentTask.onCooldown()) {
+                currentTask = nextTask();
+                continue;
             }
-            state = mCurrentTask.tick(ctx);
-        } while(mCurrentTask.wasSkipped() || mCurrentTask.onCooldown());
+
+            final Task.TickResult result = currentTask.tick(ctx);
+
+            switch(result.getStatus()) {
+                case DONE:
+                    currentTask = null;
+                    break;
+                case SKIP:
+                    currentTask = nextTask();
+                    break;
+                case RETRY:
+                    mNextTickTask = currentTask;
+                    currentTask = null;
+                    break;
+            }
+        }
+    }
+
+    private Task<C> nextTask() {
+        return getTaskManager().nextTask();
     }
 
     @Override
     public void repaint(Graphics g) {
+        if(!mRunning) {
+            return;
+        }
         if(g instanceof Graphics2D) {
             drawUI((Graphics2D) g);
         }
