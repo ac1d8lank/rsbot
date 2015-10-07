@@ -68,6 +68,5 @@ public abstract class Task<C extends ClientContext> {
     public void skip() {
         mDone = true;
         mSkipped = true;
-        mCooldownOverTime = System.currentTimeMillis() + getCooldownMillis();
     }
 }

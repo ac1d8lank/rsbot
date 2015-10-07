@@ -12,7 +12,7 @@ import java.awt.*;
 public class AcidAgility extends AcidScript<ClientContext> {
 
     /** Acid on the eyes */
-    protected static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
+    public static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
 
     private Manager mManager;
 
@@ -27,15 +27,6 @@ public class AcidAgility extends AcidScript<ClientContext> {
 
     @Override
     public void drawUI(Graphics2D g) {
-        g.setColor(Color.yellow);
-        g.fillRect(0, 0, 400, 70);
-
-        g.setColor(Color.black);
-        g.setFont(SANS);
-        g.drawString("AcidScript", 5, 25);
-        if(state != null) {
-            g.drawString("State: "+ state, 5, 45);
-        }
         if(mManager.mmCourse != null) {
             g.drawString("Course: "+ mManager.mmCourse.name, 5, 65);
         }
@@ -43,9 +34,12 @@ public class AcidAgility extends AcidScript<ClientContext> {
 
     private class Manager extends CycleTaskManager<ClientContext> {
         private Course mmCourse;
+        private Task<ClientContext> mmRestTask;
 
         public Manager(ClientContext ctx) {
             super(ctx);
+
+            mmRestTask = new RestHealTask();
 
             Player p = ctx.players.local();
             for(Course c : Course.ALL) {
@@ -67,6 +61,16 @@ public class AcidAgility extends AcidScript<ClientContext> {
             for(Course.Action a : mmCourse.getActions()) {
                 addTask(a);
             }
+        }
+
+        @Override
+        public Task<ClientContext> nextTask() {
+            //TODO base this threshold off highest course damage
+            final int hp = PlayerUtils.getHealthPercent(ctx);
+            if(hp != -1 && hp <= 40) {
+                return mmRestTask;
+            }
+            return super.nextTask();
         }
     }
 }

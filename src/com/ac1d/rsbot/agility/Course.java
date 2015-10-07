@@ -7,6 +7,8 @@ import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.MobileIdNameQuery;
 import org.powerbot.script.rt6.Player;
 
+import java.util.ArrayList;
+
 public class Course {
     //TODO: simplify these constructors with a builder
 
@@ -185,12 +187,19 @@ public class Course {
 
     public abstract static class Action extends Task<ClientContext> {
 
+        public ArrayList<Integer> idleAnimations = new ArrayList<Integer>() {{
+           add(-1);
+           add(22634);
+           add(22637);
+           add(22640);
+        }};
+
         public abstract String perform(ClientContext ctx);
 
         @Override
         public String tick(ClientContext ctx) {
             final Player p = ctx.players.local();
-            if(p.inMotion() || p.animation() != -1) {
+            if(p.inMotion() || !idleAnimations.contains(p.animation())) {
                 // We're running or animating, wait.
                 return "Player active";
             }
@@ -200,7 +209,7 @@ public class Course {
 
         @Override
         public long getCooldownMillis() {
-            return 1000;
+            return 5000;
         }
     }
 }
