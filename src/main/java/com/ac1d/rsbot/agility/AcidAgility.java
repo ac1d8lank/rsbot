@@ -8,7 +8,7 @@ import org.powerbot.script.rt6.Player;
 
 import java.awt.*;
 
-@Script.Manifest(name = "AcidAgility", description = "Agility Trainer")
+@Script.Manifest(name = "AcidAgility", description = "Agility Trainer", properties = "client=6")
 public class AcidAgility extends AcidScript<ClientContext> {
 
     /** Acid on the eyes */

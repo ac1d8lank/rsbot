@@ -8,7 +8,7 @@ import com.ac1d.rsbot.util.rt6.PickupTask;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 
-@Script.Manifest(name = "AcidLizard", description = "Sets lizard traps")
+@Script.Manifest(name = "AcidLizard", description = "Sets lizard traps", properties = "client=6")
 public class AcidLizards extends AcidScript<ClientContext>{
     private CycleTaskManager<ClientContext> mManager;
 
