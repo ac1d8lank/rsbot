@@ -11,9 +11,6 @@ import java.awt.*;
 @Script.Manifest(name = "AcidAgility", description = "Agility Trainer", properties = "client=6")
 public class AcidAgility extends AcidScript<ClientContext> {
 
-    /** Acid on the eyes */
-    public static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
-
     private Manager mManager;
 
     public AcidAgility() {

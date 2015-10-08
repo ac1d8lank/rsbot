@@ -8,6 +8,10 @@ import org.powerbot.script.PollingScript;
 import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener {
+
+    /** Acid on the eyes */
+    public static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
+
     /*
      * Might want to make this a stack?
      * If override returns a RETRY, would we want to retry both? Or are we okay with knocking it out
@@ -105,7 +109,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         g.fillRect(0, 0, 420, 70);
 
         g.setColor(Color.black);
-        g.setFont(AcidAgility.SANS);
+        g.setFont(SANS);
         g.drawString("AcidScript", 5, 25);
         if(status != null) {
             g.drawString("Status: "+ status, 5, 45);
