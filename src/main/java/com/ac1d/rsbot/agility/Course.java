@@ -1,6 +1,7 @@
 package com.ac1d.rsbot.agility;
 
 import com.ac1d.rsbot.util.*;
+import com.ac1d.rsbot.util.rt6.InteractTask;
 import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
@@ -48,7 +49,7 @@ public class Course {
                     Areas.rect(1, 2915, 3354, 2917, 3553))
     );
 
-    //TODO: Add low-hp resting state, add zones for initial tube crawl-thru
+    //TODO: Add zones for initial tube crawl-thru
     public static final Course BARBARIAN_OUTPOST = new Course(
             "Barbarian Outpost", new Area[] {Areas.rect(2555, 3559, 2528, 3542), Areas.rect(2546, 9955, 2555, 9948)},
             new Obstacle("Swing-on", "Rope swing", 43526,
@@ -78,19 +79,21 @@ public class Course {
 
     public final String name;
     public final Area[] courseAreas;
-    public final Action[] actions;
+    public final Task<ClientContext>[] actions;
 
-    protected Course(String name, Area courseArea, Action... actions) {
+    @SafeVarargs
+    protected Course(String name, Area courseArea, Task<ClientContext>... actions) {
         this(name, new Area[]{courseArea}, actions);
     }
 
-    protected Course(String name, Area[] courseAreas, Action... actions) {
+    @SafeVarargs
+    protected Course(String name, Area[] courseAreas, Task<ClientContext>... actions) {
         this.name = name;
         this.courseAreas = courseAreas;
         this.actions = actions;
     }
 
-    public Action[] getActions() {
+    public Task<ClientContext>[] getActions() {
         return actions;
     }
 
@@ -123,10 +126,7 @@ public class Course {
         }
     }
 
-    public static class Obstacle extends Action {
-        public final String name;
-        public final String action;
-        public final int id;
+    public static class Obstacle extends InteractTask {
         public final Area[] areas;
         public boolean nearest;
 
@@ -135,15 +135,13 @@ public class Course {
         }
 
         public Obstacle(String action, String name, int id, boolean nearest, Area... areas) {
-            this.name = name;
-            this.action = action;
-            this.id = id;
+            super(id, action, name);
             this.areas = areas;
             this.nearest = nearest;
         }
 
         @Override
-        public TickResult perform(ClientContext ctx) {
+        public TickResult tick(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             boolean inArea = false;
@@ -157,6 +155,11 @@ public class Course {
                 return skip("Not in area");
             }
 
+            return super.tick(ctx);
+        }
+
+        @Override
+        protected GameObject getGameObject(ClientContext ctx, int id) {
             final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(id).nearest();
             GameObject obj = q.poll();
             if(!nearest) {
@@ -165,22 +168,7 @@ public class Course {
                     obj = o;
                 }
             }
-
-            if(obj == null) {
-                return skip("Couldn't find object");
-            }
-
-            if(!obj.inViewport() || Random.oneIn(3)) {
-                ctx.camera.turnTo(obj);
-                retry("Moving camera");
-            }
-
-
-            if(obj.interact(action, name)) {
-                return done("Interacting");
-            } else {
-                return done("Waiting to interact");
-            }
+            return obj;
         }
     }
 

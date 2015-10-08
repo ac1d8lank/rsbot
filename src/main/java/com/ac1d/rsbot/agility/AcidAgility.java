@@ -11,10 +11,37 @@ import java.awt.*;
 @Script.Manifest(name = "AcidAgility", description = "Agility Trainer", properties = "client=6")
 public class AcidAgility extends AcidScript<ClientContext> {
 
+    private Course mmCourse;
     private Manager mManager;
 
     public AcidAgility() {
         mManager = new Manager(ctx);
+    }
+
+    @Override
+    public void start() {
+        super.start();
+
+        Player p = ctx.players.local();
+        for(Course c : Course.ALL) {
+            for(Area a : c.courseAreas) {
+                if (a.contains(p)) {
+                    mmCourse = c;
+                    break;
+                }
+            }
+        }
+
+        if(mmCourse == null) {
+            //TODO: pop up a dialog explaining where to start the script
+            // We aren't in a course :(
+            ctx.controller.stop();
+            return;
+        }
+
+        for(Task<ClientContext> a : mmCourse.getActions()) {
+            mManager.addTask(a);
+        }
     }
 
     @Override
@@ -24,40 +51,18 @@ public class AcidAgility extends AcidScript<ClientContext> {
 
     @Override
     public void drawUI(Graphics2D g) {
-        if(mManager.mmCourse != null) {
-            g.drawString("Course: "+ mManager.mmCourse.name, 5, 65);
+        if(mmCourse != null) {
+            g.drawString("Course: "+ mmCourse.name, 5, 65);
         }
     }
 
     private class Manager extends CycleTaskManager<ClientContext> {
-        private Course mmCourse;
         private Task<ClientContext> mmRestTask;
 
         public Manager(ClientContext ctx) {
             super(ctx);
 
             mmRestTask = new RestHealTask();
-
-            Player p = ctx.players.local();
-            for(Course c : Course.ALL) {
-                for(Area a : c.courseAreas) {
-                    if (a.contains(p)) {
-                        mmCourse = c;
-                        break;
-                    }
-                }
-            }
-
-            if(mmCourse == null) {
-                //TODO: pop up a dialog explaining where to start the script
-                // We aren't in a course :(
-                ctx.controller.stop();
-                return;
-            }
-
-            for(Course.Action a : mmCourse.getActions()) {
-                addTask(a);
-            }
         }
 
         @Override
