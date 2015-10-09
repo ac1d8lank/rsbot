@@ -9,4 +9,8 @@ public abstract class TaskManager<C extends ClientContext> extends ClientAccesso
     }
 
     public abstract Task<C> nextTask();
+
+    public abstract void onTaskSuccess(Task<C> task);
+
+    public abstract void onTaskFail(Task<C> task);
 }

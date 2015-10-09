@@ -2,6 +2,8 @@ package com.ac1d.rsbot.agility;
 
 import com.ac1d.rsbot.util.*;
 import com.ac1d.rsbot.util.rt6.InteractTask;
+import com.ac1d.rsbot.util.rt6.MoveTask;
+import com.ac1d.rsbot.util.rt6.ObjectInteractTask;
 import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
@@ -62,7 +64,7 @@ public class Course {
                     Areas.rect(2545, 3549, 2539, 3542)),
             new Obstacle("Walk-across", "Balancing ledge", 2302,
                     Areas.rect(1, 2538, 3547, 2536, 3545)),
-            new Move(Areas.rect(2533, 3545, 2538, 3547), Areas.rect(2539, 3544, 2541, 3548)),
+            new MoveTask(Areas.rect(2533, 3545, 2538, 3547), Areas.rect(2539, 3544, 2541, 3548)),
             new Obstacle("Climb-down", "Ladder", 3205,
                     Areas.rect(1, 2532, 3547, 2532, 3546)),
             new Obstacle("Climb-over", "Crumbling wall", 1948,
@@ -97,36 +99,7 @@ public class Course {
         return actions;
     }
 
-    //TODO: split these out into separate class files
-    public static class Move extends Action {
-
-        private final Area from;
-        private final Area to;
-
-        public Move(Area from, Area to) {
-            this.from = from;
-            this.to = to;
-        }
-
-
-        @Override
-        public TickResult perform(ClientContext ctx) {
-            final Player p = ctx.players.local();
-
-            if(!from.contains(p)) {
-                return skip("Not in area");
-            }
-
-            // TODO: don't always use minimap
-            if(ctx.movement.findPath(to.getRandomTile()).traverse()) {
-                return done("Moving");
-            } else {
-                return done("Failed to move");
-            }
-        }
-    }
-
-    public static class Obstacle extends InteractTask {
+    public static class Obstacle extends ObjectInteractTask {
         public final Area[] areas;
         public boolean nearest;
 
@@ -141,25 +114,21 @@ public class Course {
         }
 
         @Override
-        public TickResult tick(ClientContext ctx) {
+        public boolean isReady(ClientContext ctx) {
             final Player p = ctx.players.local();
 
             boolean inArea = false;
-            for(Area a : areas) {
-                if(a.contains(p)) {
+            for (Area a : areas) {
+                if (a.contains(p)) {
                     inArea = true;
                     break;
                 }
             }
-            if(!inArea) {
-                return skip("Not in area");
-            }
-
-            return super.tick(ctx);
+            return inArea && super.isReady(ctx);
         }
 
         @Override
-        protected GameObject getGameObject(ClientContext ctx, int id) {
+        protected GameObject getObject(ClientContext ctx, int id) {
             final MobileIdNameQuery<GameObject> q = ctx.objects.select().id(id).nearest();
             GameObject obj = q.poll();
             if(!nearest) {
@@ -169,34 +138,6 @@ public class Course {
                 }
             }
             return obj;
-        }
-    }
-
-    public abstract static class Action extends Task<ClientContext> {
-
-        public ArrayList<Integer> idleAnimations = new ArrayList<Integer>() {{
-           add(-1);
-           add(22634);
-           add(22637);
-           add(22640);
-        }};
-
-        public abstract TickResult perform(ClientContext ctx);
-
-        @Override
-        public TickResult tick(ClientContext ctx) {
-            final Player p = ctx.players.local();
-            if(p.inMotion() || !idleAnimations.contains(p.animation())) {
-                // We're running or animating, wait.
-                return retry("Player active");
-            }
-
-            return perform(ctx);
-        }
-
-        @Override
-        public long getCooldownMillis() {
-            return 5000;
         }
     }
 }

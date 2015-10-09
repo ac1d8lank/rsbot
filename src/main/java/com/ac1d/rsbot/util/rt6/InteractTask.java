@@ -1,45 +1,52 @@
 package com.ac1d.rsbot.util.rt6;
 
 import com.ac1d.rsbot.util.Task;
+import org.powerbot.script.Interactive;
+import org.powerbot.script.Locatable;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
 
-public class InteractTask extends Task<ClientContext> {
+public abstract class InteractTask<O extends Interactive> extends Task<ClientContext> {
 
-    private int mId;
     private String mAction;
     private String mOption;
 
-    public InteractTask(int id, String action, String option) {
-        mId = id;
+    private boolean mDone;
+
+    public InteractTask(String action, String option) {
         mAction = action;
         mOption = option;
     }
 
     @Override
-    public TickResult tick(ClientContext ctx) {
+    public boolean isReady(ClientContext ctx) {
         if(!ctx.players.local().idle()) {
-            return retry("Player busy");
+            return false;
         }
 
-        GameObject obj = getGameObject(ctx, mId);
-        if(obj == null || !obj.valid()) {
-            return skip("Can't find "+mAction+" "+mOption);
-        }
-
-        if(!obj.inViewport()) {
-            ctx.camera.turnTo(obj);
-            return retry("Looking towards "+mAction+" "+mOption);
-        }
-
-        if(obj.interact(mAction, mOption)) {
-            return done("Interacting: "+mAction+" "+mOption);
-        }
-
-        return done("Unable to interact: "+mAction+" "+mOption);
+        return getEntity(ctx).valid();
     }
 
-    protected GameObject getGameObject(ClientContext ctx, int id) {
-        return ctx.objects.select().id(id).nearest().poll();
+    @Override
+    public void onStart(ClientContext ctx) {
+        super.onStart(ctx);
+        mDone = false;
     }
+
+    @Override
+    public void onPoll(ClientContext ctx) {
+        O obj = getEntity(ctx);
+        if(obj instanceof Locatable && !obj.inViewport()) {
+            ctx.camera.turnTo((Locatable)obj);
+            return;
+        }
+
+        mDone = obj.interact(mAction, mOption);
+    }
+
+    @Override
+    public boolean isDone(ClientContext ctx) {
+        return mDone;
+    }
+
+    protected abstract O getEntity(ClientContext ctx);
 }

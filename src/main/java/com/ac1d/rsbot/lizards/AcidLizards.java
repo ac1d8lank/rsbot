@@ -4,6 +4,7 @@ import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.CycleTaskManager;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.rt6.InteractTask;
+import com.ac1d.rsbot.util.rt6.ObjectInteractTask;
 import com.ac1d.rsbot.util.rt6.PickupTask;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
@@ -16,23 +17,18 @@ public class AcidLizards extends AcidScript<ClientContext>{
         mManager = new CycleTaskManager<>(ctx);
 
         // Set traps
-        mManager.addTask(new InteractTask(19679, "Set-trap", "Young tree") {
+        mManager.addTask(new ObjectInteractTask(19679, "Set-trap", "Young tree") {
             @Override
-            public TickResult tick(ClientContext ctx) {
+            public boolean isReady(ClientContext ctx) {
                 if(trapsInInventory() == 0) {
-                    return skip("No Traps");
+                    return false;
                 }
-                return super.tick(ctx);
-            }
-
-            @Override
-            public long getCooldownMillis() {
-                return 2000;
+                return super.isReady(ctx);
             }
         });
 
         // Pick up lizard
-        mManager.addTask(new InteractTask(19675, "Check", "Net trap"));
+        mManager.addTask(new ObjectInteractTask(19675, "Check", "Net trap"));
 
         // Pick up failed trap
         mManager.addTask(new PickupTask(954, "Rope"));

@@ -3,70 +3,30 @@ package com.ac1d.rsbot.util;
 import org.powerbot.script.ClientContext;
 
 public abstract class Task<C extends ClientContext> {
-
-    private long mCooldownOverTime;
-    private TickResult mResult = new TickResult();
+    /**
+     * @return true if the Task is ready to run
+     */
+    public abstract boolean isReady(C ctx);
 
     /**
-     * Allow this Task to perform some non-blocking work.
-     * @return the state of this task
+     * Runs before the first poll of this Task's lifecycle
      */
-    public abstract TickResult tick(C ctx);
+    public void onStart(C ctx) {}
 
     /**
-     * Sets a cooldown on this task, this instance will be skipped until the cooldown ends.
-     * Override to set a cooldown after done.
-     * @return a cooldown in milliseconds.
+     * Runs each poll while this Task is active
      */
-    public long getCooldownMillis() {
-        return 0;
-    }
+    public abstract void onPoll(C ctx) throws FailureException;
+
     /**
-     * @return true if this task is on cooldown
+     * @return true if the Task has completed
      */
-    public boolean onCooldown() {
-        return System.currentTimeMillis() < mCooldownOverTime;
-    }
+    public abstract boolean isDone(C ctx);
 
-    public enum ResultState {
-        /** Run next task, next tick (also wait for cooldown if used) **/
-        DONE,
-        /** Run next task, this tick **/
-        SKIP,
-        /** Run this task, next tick **/
-        RETRY,
-    }
+    /**
+     * Runs once at the end of the Task's lifecycle
+     */
+    public void onFinish() {}
 
-    protected final TickResult done(String description) {
-        mCooldownOverTime = System.currentTimeMillis() + getCooldownMillis();
-        return setResult(ResultState.DONE, description);
-    }
-
-    protected final TickResult skip(String description) {
-        return setResult(ResultState.SKIP, description);
-    }
-
-    protected final TickResult retry(String description) {
-        return setResult(ResultState.RETRY, description);
-    }
-
-    private TickResult setResult(ResultState status, String description) {
-        mResult.state = status;
-        mResult.description = description;
-        return mResult;
-    }
-
-    public class TickResult {
-        private TickResult() {}
-        private ResultState state;
-        private String description;
-
-        public ResultState getState() {
-            return state;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-    }
+    public static class FailureException extends Exception {}
 }

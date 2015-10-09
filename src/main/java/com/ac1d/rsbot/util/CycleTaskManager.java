@@ -36,4 +36,12 @@ public class CycleTaskManager<C extends ClientContext> extends TaskManager<C> {
         mPosition = (mPosition + 1) % mList.size();
         return next;
     }
+
+    @Override
+    public void onTaskSuccess(Task<C> task) {
+    }
+
+    @Override
+    public void onTaskFail(Task<C> task) {
+    }
 }
