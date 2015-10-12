@@ -50,7 +50,7 @@ public class AcidAgility extends AcidScript<ClientContext> {
     }
 
     @Override
-    public void drawUI(Graphics2D g) {
+    public void drawUI(Graphics g) {
         if(mmCourse != null) {
             g.drawString("Course: "+ mmCourse.name, 5, 65);
         }

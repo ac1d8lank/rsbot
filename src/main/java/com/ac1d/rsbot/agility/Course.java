@@ -1,7 +1,6 @@
 package com.ac1d.rsbot.agility;
 
 import com.ac1d.rsbot.util.*;
-import com.ac1d.rsbot.util.rt6.InteractTask;
 import com.ac1d.rsbot.util.rt6.MoveTask;
 import com.ac1d.rsbot.util.rt6.ObjectInteractTask;
 import org.powerbot.script.Area;
@@ -10,67 +9,65 @@ import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.MobileIdNameQuery;
 import org.powerbot.script.rt6.Player;
 
-import java.util.ArrayList;
-
 public class Course {
     //TODO: simplify these constructors with a builder
 
     public static final Course GNOME_STRONGHOLD = new Course(
-            "Gnome Stronghold", Areas.rect(2469, 3440, 2490, 3414),
+            "Gnome Stronghold", AreaUtils.rect(2469, 3440, 2490, 3414),
             new Obstacle("Walk-across", "Log balance", 69526,
-                    Areas.rect(0, 2468, 3440, 2488, 3436)),
+                    AreaUtils.rect(0, 2468, 3440, 2488, 3436)),
             new Obstacle("Climb-over", "Obstacle net", 69383,
-                    Areas.rect(0, 2470, 3425, 2478, 3430)),
+                    AreaUtils.rect(0, 2470, 3425, 2478, 3430)),
             new Obstacle("Climb", "Tree branch", 69508,
-                    Areas.rect(1, 2476, 3424, 2471, 3422)),
+                    AreaUtils.rect(1, 2476, 3424, 2471, 3422)),
             new Obstacle("Walk-on", "Balancing rope", 2312,
-                    Areas.rect(2, 2472, 3421, 2477, 3418)),
+                    AreaUtils.rect(2, 2472, 3421, 2477, 3418)),
             new Obstacle("Climb-down", "Tree branch", 69507,
-                    Areas.rect(2, 2483, 3421, 2487, 3418)),
+                    AreaUtils.rect(2, 2483, 3421, 2487, 3418)),
             new Obstacle("Climb-over", "Obstacle net", 69384,
-                    Areas.rect(0, 2481, 3414, 2490, 3425)),
+                    AreaUtils.rect(0, 2481, 3414, 2490, 3425)),
             new Obstacle("Squeeze-through", "Obstacle pipe", 69378,
-                    Areas.rect(0, 2490, 3426, 2481, 3432))
+                    AreaUtils.rect(0, 2490, 3426, 2481, 3432))
     );
 
     public static final Course BURTHORPE = new Course(
-            "Burthorpe", Areas.rect(2922, 3548, 2908, 3566),
+            "Burthorpe", AreaUtils.rect(2922, 3548, 2908, 3566),
             new Obstacle("Walk", "Log beam", 66895,
-                    Areas.rect(2913, 3553, 2922, 3548)),
+                    AreaUtils.rect(2913, 3553, 2922, 3548)),
             new Obstacle("Climb-up", "Wall", 66912,
-                    Areas.rect(2918, 3558, 2921, 3561)),
+                    AreaUtils.rect(2918, 3558, 2921, 3561)),
             new Obstacle("Walk-across", "Balancing ledge", 66909,
-                    Areas.rect(1, 2920, 3562, 2918, 3564), Areas.rect(1, 2917, 3564, 2916, 3564)),
+                    AreaUtils.rect(1, 2920, 3562, 2918, 3564), AreaUtils.rect(1, 2917, 3564, 2916, 3564)),
             new Obstacle("Climb-over", "Obstacle low wall", 66902,
-                    Areas.rect(1, 2912, 3564, 2910, 3564), Areas.rect(1, 2910, 3563, 2910, 3561)),
+                    AreaUtils.rect(1, 2912, 3564, 2910, 3564), AreaUtils.rect(1, 2910, 3563, 2910, 3561)),
             new Obstacle("Swing-on", "Rope swing", 66904,
-                    Areas.rect(1, 2912, 3563, 2912, 3561)),
+                    AreaUtils.rect(1, 2912, 3563, 2912, 3561)),
             new Obstacle("Swing-across", "Monkey bars", 66897,
-                    Areas.rect(1, 2917, 3563, 2916, 3561)),
+                    AreaUtils.rect(1, 2917, 3563, 2916, 3561)),
             new Obstacle("Jump-down", "Ledge", 66910,
-                    Areas.rect(1, 2915, 3354, 2917, 3553))
+                    AreaUtils.rect(1, 2915, 3354, 2917, 3553))
     );
 
     //TODO: Add zones for initial tube crawl-thru
     public static final Course BARBARIAN_OUTPOST = new Course(
-            "Barbarian Outpost", new Area[] {Areas.rect(2555, 3559, 2528, 3542), Areas.rect(2546, 9955, 2555, 9948)},
+            "Barbarian Outpost", new Area[] {AreaUtils.rect(2555, 3559, 2528, 3542), AreaUtils.rect(2546, 9955, 2555, 9948)},
             new Obstacle("Swing-on", "Rope swing", 43526,
-                    Areas.rect(2554, 3559, 2543, 3550)),
+                    AreaUtils.rect(2554, 3559, 2543, 3550)),
             new Obstacle("Climb-up", "Ladder", 32015,
-                    Areas.rect(2546, 9955, 2555, 9948)),
+                    AreaUtils.rect(2546, 9955, 2555, 9948)),
             new Obstacle("Walk-across", "Log balance", 43595,
-                    Areas.rect(2554, 3549, 2549, 3543)),
+                    AreaUtils.rect(2554, 3549, 2549, 3543)),
             new Obstacle("Climb over", "Obstacle net", 20211,
-                    Areas.rect(2545, 3549, 2539, 3542)),
+                    AreaUtils.rect(2545, 3549, 2539, 3542)),
             new Obstacle("Walk-across", "Balancing ledge", 2302,
-                    Areas.rect(1, 2538, 3547, 2536, 3545)),
-            new MoveTask(Areas.rect(2533, 3545, 2538, 3547), Areas.rect(2539, 3544, 2541, 3548)),
+                    AreaUtils.rect(1, 2538, 3547, 2536, 3545)),
+            new MoveTask(AreaUtils.rect(2533, 3545, 2538, 3547), AreaUtils.rect(2539, 3544, 2541, 3548)),
             new Obstacle("Climb-down", "Ladder", 3205,
-                    Areas.rect(1, 2532, 3547, 2532, 3546)),
+                    AreaUtils.rect(1, 2532, 3547, 2532, 3546)),
             new Obstacle("Climb-over", "Crumbling wall", 1948,
-                    Areas.rect(2532, 3546, 2532, 3547), Areas.rect(2532, 3548, 2537, 3555)),
+                    AreaUtils.rect(2532, 3546, 2532, 3547), AreaUtils.rect(2532, 3548, 2537, 3555)),
             new Obstacle("Climb-over", "Crumbling wall", 1948, false,
-                    Areas.rect(2538, 3552, 2542, 3554))
+                    AreaUtils.rect(2538, 3552, 2542, 3554))
     );
 
     public static final Course[] ALL = {

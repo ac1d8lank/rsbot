@@ -12,6 +12,7 @@ public class CycleTaskManager<C extends ClientContext> extends TaskManager<C> {
 
     private List<Task<C>> mList = new ArrayList<>();
     private int mPosition = 0;
+    private Task<C> mCurrentTask;
 
     public CycleTaskManager(C ctx) {
         super(ctx);
@@ -32,9 +33,14 @@ public class CycleTaskManager<C extends ClientContext> extends TaskManager<C> {
             return null;
         }
 
-        final Task<C> next =  mList.get(mPosition);
+        mCurrentTask =  mList.get(mPosition);
         mPosition = (mPosition + 1) % mList.size();
-        return next;
+        return mCurrentTask;
+    }
+
+    @Override
+    public Task<C> currentTask() {
+        return mCurrentTask;
     }
 
     @Override

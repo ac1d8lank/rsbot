@@ -1,12 +1,10 @@
 package com.ac1d.rsbot.util;
 
-import org.powerbot.script.ClientContext;
-import org.powerbot.script.PaintListener;
-import org.powerbot.script.PollingScript;
+import org.powerbot.script.*;
 
 import java.awt.*;
 
-public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener {
+public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener {
 
     /** Acid on the eyes */
     public static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
@@ -59,6 +57,9 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
         if(mCurrentTask == null) {
             mCurrentTask = manager.nextTask();
+            if(mCurrentTask == null) {
+                return;
+            }
             if(!mCurrentTask.isReady(ctx)) {
                 handleTaskFailure();
                 return;
@@ -78,6 +79,13 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         }
     }
 
+    @Override
+    public void messaged(MessageEvent messageEvent) {
+        if(mCurrentTask != null) {
+            mCurrentTask.onMessage(messageEvent);
+        }
+    }
+
     private void handleTaskSuccess() {
         getTaskManager().onTaskSuccess(mCurrentTask);
         mCurrentTask.onFinish();
@@ -91,16 +99,14 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
     }
 
     @Override
-    public void repaint(Graphics g) {
+    public final void repaint(Graphics g) {
         if(!mRunning) {
             return;
         }
-        if(g instanceof Graphics2D) {
-            drawUI((Graphics2D) g);
-        }
+        drawUI(g);
     }
 
-    public void drawUI(Graphics2D g) {
+    public void drawUI(Graphics g) {
         g.setColor(Color.yellow);
         g.fillRect(0, 0, 420, 70);
 
