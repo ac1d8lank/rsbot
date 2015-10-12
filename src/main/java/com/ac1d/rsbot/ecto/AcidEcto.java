@@ -65,6 +65,11 @@ public class AcidEcto extends AcidScript<ClientContext> {
             }
 
             @Override
+            protected long getInteractDelayMillis() {
+                return 10000;
+            }
+
+            @Override
             public boolean isDone(ClientContext ctx) {
                 return EctoArea.PORT_ENTER.playerInside(ctx) && super.isDone(ctx);
             }
@@ -74,7 +79,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoArea.AreaMoveTask(EctoArea.PORT_EXIT, EctoArea.ECTO) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return !shouldBank() && Random.percent(14) && super.isReady(ctx);
+                return !shouldBank() && EctoArea.PORT_ENTER.playerInside(ctx) && Random.percent(14) && super.isReady(ctx);
             }
         });
 
@@ -82,7 +87,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoObject.ObjectTask(EctoObject.GRINDER_UP) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return canGrindBones() && super.isReady(ctx);
+                return canGrindBones() && (EctoArea.ECTO.playerInside(ctx) || EctoArea.PORT_ENTER.playerInside(ctx)) && super.isReady(ctx);
             }
 
             @Override
@@ -107,7 +112,12 @@ public class AcidEcto extends AcidScript<ClientContext> {
             }
 
             @Override
-            protected long getCooldownMillis() {
+            protected long getInteractDelayMillis() {
+                return 3000;
+            }
+
+            @Override
+            protected long getIdleDelayMillis() {
                 return 3000;
             }
 
@@ -143,7 +153,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoObject.ObjectTask(EctoObject.TRAPDOOR_CLOSED) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return canFillBuckets() && super.isReady(ctx);
+                return canFillBuckets() && EctoArea.ECTO.playerInside(ctx) && super.isReady(ctx);
             }
 
             @Override
@@ -156,7 +166,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoObject.ObjectTask(EctoObject.TRAPDOOR_OPEN) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return canFillBuckets() && super.isReady(ctx);
+                return canFillBuckets() && EctoArea.ECTO.playerInside(ctx) && super.isReady(ctx);
             }
 
             @Override
@@ -195,7 +205,12 @@ public class AcidEcto extends AcidScript<ClientContext> {
             }
 
             @Override
-            protected long getCooldownMillis() {
+            protected long getInteractDelayMillis() {
+                return 3000;
+            }
+
+            @Override
+            protected long getIdleDelayMillis() {
                 return 3000;
             }
 
@@ -267,7 +282,12 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoObject.ObjectTask(EctoObject.ENERGY_BARRIER) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return shouldBank() && super.isReady(ctx);
+                return shouldBank() && EctoArea.PORT_ENTER.playerInside(ctx) && super.isReady(ctx);
+            }
+
+            @Override
+            public boolean isDone(ClientContext ctx) {
+                return EctoArea.PORT_EXIT.playerInside(ctx) && super.isDone(ctx);
             }
         });
 
@@ -297,7 +317,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
     }
 
     private boolean canFillBuckets() {
-        return hasItem(EctoItem.EMPTY_BUCKET);
+        return hasItem(EctoItem.EMPTY_BUCKET) && (hasItem(EctoItem.BONEMEAL) || hasItem(EctoItem.BONES));
     }
 
     private boolean canWorship() {
@@ -323,7 +343,9 @@ public class AcidEcto extends AcidScript<ClientContext> {
             }
         }
         text += "  Player idle: "+ctx.players.local().idle();
-        text += "  Task: "+mManager.currentTask().toString();
+        if(mManager.currentTask() != null) {
+            text += "  Task: " + mManager.currentTask().toString();
+        }
         g.drawString(text, 0, 20);
     }
 

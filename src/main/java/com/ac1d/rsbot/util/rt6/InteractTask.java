@@ -12,6 +12,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
 
     private boolean mDone;
     private long mInteractTime;
+    private long mIdleStartTime;
 
     public InteractTask(String action, String option) {
         mAction = action;
@@ -39,8 +40,13 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
             ctx.camera.turnTo((Locatable)obj);
             return;
         }
+        final boolean idle = ctx.players.local().idle();
 
-        if(ctx.players.local().idle() && !onCooldown()) {
+        if(!idle) {
+            mIdleStartTime = System.currentTimeMillis();
+        }
+
+        if(idle && !onInteractCooldown() && !onIdleDelay()) {
             mDone = obj.interact(mAction, mOption);
             if(mDone) {
                 mInteractTime = System.currentTimeMillis();
@@ -48,18 +54,38 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         }
     }
 
-    private boolean onCooldown() {
+    private boolean onInteractCooldown() {
         final long now = System.currentTimeMillis();
-        return now - mInteractTime < getCooldownMillis();
+        return now - mInteractTime < getInteractDelayMillis();
     }
 
-    protected long getCooldownMillis() {
-        return 500;
+    private boolean onIdleDelay() {
+        final long now = System.currentTimeMillis();
+        return now - mIdleStartTime < getIdleDelayMillis();
+    }
+
+    /**
+     * Wait this many milliseconds before interacting or checking completeness
+     */
+    protected long getInteractDelayMillis() {
+        return 1000;
+    }
+
+    /**
+     * Player must be idle for this many milliseconds before interacting or completing
+     */
+    protected long getIdleDelayMillis() {
+        return 1000;
     }
 
     @Override
     public boolean isDone(ClientContext ctx) {
-        return !onCooldown() && ctx.players.local().idle() && mDone;
+        return !onInteractCooldown() && !onIdleDelay() && ctx.players.local().idle() && mDone;
+    }
+
+    @Override
+    public String toString() {
+        return "InteractTask["+mAction+" "+mOption+", onIdleDelay="+onIdleDelay()+", onInteractCd="+onInteractCooldown()+"]";
     }
 
     protected abstract O getEntity(ClientContext ctx);

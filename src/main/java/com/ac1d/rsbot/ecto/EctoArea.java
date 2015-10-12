@@ -7,7 +7,7 @@ import org.powerbot.script.rt6.ClientContext;
 
 public enum EctoArea {
     BANK        (0, 3686, 3471, 3691, 3466),
-    PORT_CENTER (0, 3658, 3491, 3669, 3485),
+    PORT_CENTER (0, 3658, 3506, 3669, 3485),
     PORT_EXIT   (0, 3657, 3507, 3662, 3504),
     PORT_ENTER  (0, 3662, 3508, 3657, 3510),
     ECTO        (0, 3656, 3527+1,
