@@ -56,26 +56,21 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         final TaskManager<C> manager = getTaskManager();
 
         if(mCurrentTask == null) {
-            mCurrentTask = manager.nextTask();
+            mCurrentTask = getNextTask(manager);
             if(mCurrentTask == null) {
-                return;
-            }
-            if(!mCurrentTask.isReady(ctx)) {
-                handleTaskFailure();
                 return;
             }
             mCurrentTask.onStart(ctx);
         }
 
-        try {
-            mCurrentTask.onPoll(ctx);
-        } catch(Task.FailureException e) {
-            handleTaskFailure();
-            return;
-        }
-
         if(mCurrentTask.isDone(ctx)) {
             handleTaskSuccess();
+        } else {
+            try {
+                mCurrentTask.onPoll(ctx);
+            } catch (Task.FailureException e) {
+                handleTaskFailure();
+            }
         }
     }
 
@@ -119,4 +114,9 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
     }
 
     public abstract TaskManager<C> getTaskManager();
+
+    public Task<C> getNextTask(TaskManager<C> manager) {
+        // TODO: skip tasks if they are unfinished, but don't get caught in a loop if all are invalid
+        return manager.nextTask();
+    }
 }

@@ -68,7 +68,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
      * Wait this many milliseconds before interacting or checking completeness
      */
     protected long getInteractDelayMillis() {
-        return 1000;
+        return 3000;
     }
 
     /**
