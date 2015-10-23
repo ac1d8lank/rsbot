@@ -282,7 +282,7 @@ public class AcidEcto extends AcidScript<ClientContext> {
         mManager.addTask(new EctoObject.ObjectTask(EctoObject.ENERGY_BARRIER) {
             @Override
             public boolean isReady(ClientContext ctx) {
-                return shouldBank() && EctoArea.PORT_ENTER.playerInside(ctx) && super.isReady(ctx);
+                return shouldBank() && (EctoArea.ECTO.playerInside(ctx) || EctoArea.PORT_ENTER.playerInside(ctx)) && super.isReady(ctx);
             }
 
             @Override
