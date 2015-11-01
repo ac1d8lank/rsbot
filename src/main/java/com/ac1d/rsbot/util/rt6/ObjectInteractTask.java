@@ -3,6 +3,8 @@ package com.ac1d.rsbot.util.rt6;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 
+import java.awt.*;
+
 public class ObjectInteractTask extends InteractTask<GameObject> {
 
     private final int mId;
@@ -19,6 +21,12 @@ public class ObjectInteractTask extends InteractTask<GameObject> {
 
     /** Override this for other selection methods */
     protected GameObject getObject(ClientContext ctx, int id) {
-        return ctx.objects.select().id(id).nearest().poll();
+        return ctx.objects.select().id(id).within(16).nearest().poll();
+    }
+
+    @Override
+    public void debugDraw(ClientContext ctx, Graphics g) {
+        g.setColor(Color.yellow);
+        ((Graphics2D)g).draw(getObject(ctx, mId).tile().matrix(ctx).bounds());
     }
 }

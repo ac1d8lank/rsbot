@@ -1,5 +1,6 @@
 package com.ac1d.rsbot.util.rt6;
 
+import com.ac1d.rsbot.util.Random;
 import com.ac1d.rsbot.util.Task;
 import org.powerbot.script.Interactive;
 import org.powerbot.script.Locatable;
@@ -36,7 +37,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         if(!obj.valid()) {
             throw new Task.FailureException();
         }
-        if(obj instanceof Locatable && !obj.inViewport()) {
+        if(obj instanceof Locatable && (!obj.inViewport() || Random.percent(15))) {
             ctx.camera.turnTo((Locatable)obj);
             return;
         }
@@ -47,12 +48,20 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         }
 
         if(idle && !onInteractCooldown() && !onIdleDelay()) {
-            mDone = obj.interact(mAction, mOption);
+            mDone = interact(obj, mAction, mOption);
             if(mDone) {
                 mInteractTime = System.currentTimeMillis();
+                afterInteract(obj);
             }
         }
     }
+
+    protected boolean interact(O obj, String action, String option) {
+        return obj.interact(action, option);
+    }
+
+    /** Called after each successful interaction */
+    protected void afterInteract(O obj) {}
 
     private boolean onInteractCooldown() {
         final long now = System.currentTimeMillis();

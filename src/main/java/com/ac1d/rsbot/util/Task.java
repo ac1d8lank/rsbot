@@ -3,6 +3,8 @@ package com.ac1d.rsbot.util;
 import org.powerbot.script.ClientContext;
 import org.powerbot.script.MessageEvent;
 
+import java.awt.*;
+
 public abstract class Task<C extends ClientContext> {
     /**
      * @return true if the Task is ready to run
@@ -25,6 +27,11 @@ public abstract class Task<C extends ClientContext> {
     public void onMessage(MessageEvent message) {}
 
     /**
+     * Draws debug info for this task when running
+     */
+    public void debugDraw(C ctx, Graphics g) {}
+
+    /**
      * @return true if the Task has completed
      */
     public abstract boolean isDone(C ctx);
@@ -32,7 +39,7 @@ public abstract class Task<C extends ClientContext> {
     /**
      * Runs once at the end of the Task's lifecycle
      */
-    public void onFinish() {}
+    public void onFinish(boolean success) {}
 
     public static class FailureException extends Exception {}
 }

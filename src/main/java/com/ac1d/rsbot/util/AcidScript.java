@@ -54,6 +54,9 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         }
 
         final TaskManager<C> manager = getTaskManager();
+        if(manager == null) {
+            return;
+        }
 
         if(mCurrentTask == null) {
             mCurrentTask = getNextTask(manager);
@@ -76,20 +79,21 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public void messaged(MessageEvent messageEvent) {
-        if(mCurrentTask != null) {
-            mCurrentTask.onMessage(messageEvent);
+        final TaskManager<C> manager = getTaskManager();
+        if(manager != null) {
+            manager.onMessage(messageEvent);
         }
     }
 
     private void handleTaskSuccess() {
         getTaskManager().onTaskSuccess(mCurrentTask);
-        mCurrentTask.onFinish();
+        mCurrentTask.onFinish(true);
         mCurrentTask = null;
     }
 
     private void handleTaskFailure() {
         getTaskManager().onTaskFail(mCurrentTask);
-        mCurrentTask.onFinish();
+        mCurrentTask.onFinish(false);
         mCurrentTask = null;
     }
 
@@ -99,6 +103,9 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
             return;
         }
         drawUI(g);
+        if(mCurrentTask != null) {
+            mCurrentTask.debugDraw(ctx, g);
+        }
     }
 
     public void drawUI(Graphics g) {
