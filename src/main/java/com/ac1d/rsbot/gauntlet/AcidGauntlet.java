@@ -1,25 +1,22 @@
-package com.ac1d.rsbot.hallo15;
+package com.ac1d.rsbot.gauntlet;
 
-import com.ac1d.rsbot.hallo15.data.HalloArea;
-import com.ac1d.rsbot.hallo15.data.HalloObject;
+import com.ac1d.rsbot.gauntlet.data.GauntletArea;
 import com.ac1d.rsbot.util.AcidScript;
-import com.ac1d.rsbot.util.CycleTaskManager;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.stats.StatTrak;
-import org.powerbot.script.MessageEvent;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 
 import java.awt.*;
 
 @Script.Manifest(name = "AcidHalloween2015", description = "Does the event.")
-public class AcidHalloween15 extends AcidScript<ClientContext> {
-    private HalloManager mManager;
+public class AcidGauntlet extends AcidScript<ClientContext> {
+    private GauntletManager mManager;
 
     @Override
     public void start() {
         super.start();
-        mManager = new HalloManager(ctx);
+        mManager = new GauntletManager(ctx);
     }
 
     @Override
@@ -37,7 +34,7 @@ public class AcidHalloween15 extends AcidScript<ClientContext> {
 
     private String getAreas() {
         String s = "";
-        for(HalloArea area : HalloArea.values()) {
+        for(GauntletArea area : GauntletArea.values()) {
             if(area.containsPlayer(ctx)) {
                 s += area+":";
             }

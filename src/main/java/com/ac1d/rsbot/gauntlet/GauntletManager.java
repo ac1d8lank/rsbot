@@ -1,9 +1,9 @@
-package com.ac1d.rsbot.hallo15;
+package com.ac1d.rsbot.gauntlet;
 
-import com.ac1d.rsbot.hallo15.data.HalloArea;
-import com.ac1d.rsbot.hallo15.data.HalloMessage;
-import com.ac1d.rsbot.hallo15.data.HalloNpc;
-import com.ac1d.rsbot.hallo15.data.HalloTasks;
+import com.ac1d.rsbot.gauntlet.data.GauntletArea;
+import com.ac1d.rsbot.gauntlet.data.GauntletMessage;
+import com.ac1d.rsbot.gauntlet.data.GauntletNpc;
+import com.ac1d.rsbot.gauntlet.data.GauntletTasks;
 import com.ac1d.rsbot.util.Task;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.stats.StatTrak;
@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class HalloManager extends TaskManager<ClientContext>{
+public class GauntletManager extends TaskManager<ClientContext>{
 
     private boolean openedChest = false;
     private boolean alreadyEscorting = false;
 
-    public HalloManager(ClientContext ctx) {
+    public GauntletManager(ClientContext ctx) {
         super(ctx);
     }
 
@@ -31,7 +31,7 @@ public class HalloManager extends TaskManager<ClientContext>{
         // FIXME: DEBUG
         System.out.println(String.format("[%1$s]: %2$s", messageEvent.source(), messageEvent.text()));
         
-        final HalloMessage hm = HalloMessage.get(messageEvent.text());
+        final GauntletMessage hm = GauntletMessage.get(messageEvent.text());
         if(hm == null) {
             return;
         }
@@ -55,7 +55,7 @@ public class HalloManager extends TaskManager<ClientContext>{
                 break;
             // TODO: Stat track XP_RESCUE, XP_DEVOUR, RESCUED, COMPLETE, FAVOUR, etc
             case FAVOUR:
-                StatTrak.HOURLY.addEvent("favour", HalloMessage.FAVOUR.getData(messageEvent.text(), 1, 0));
+                StatTrak.HOURLY.addEvent("favour", GauntletMessage.FAVOUR.getData(messageEvent.text(), 1, 0));
                 break;
         }
     }
@@ -65,59 +65,59 @@ public class HalloManager extends TaskManager<ClientContext>{
         List<Task<ClientContext>> tasks = new ArrayList<>();
 
         // Always collect an xp soul if present.
-        tasks.add(HalloTasks.COLLECT_XP);
+        tasks.add(GauntletTasks.COLLECT_XP);
 
         switch(State.get(ctx)) {
             case COLLECT:
-                tasks.add(HalloTasks.TO_JETTY_DOWN);
-                tasks.add(HalloTasks.EMBARK);
+                tasks.add(GauntletTasks.TO_JETTY_DOWN);
+                tasks.add(GauntletTasks.EMBARK);
                 // if we haven't already opened this chest
                 if(!openedChest) {
-                    tasks.add(HalloTasks.GET_CHEST);
+                    tasks.add(GauntletTasks.GET_CHEST);
                 }
-                if(HalloArea.RIVER.containsPlayer(ctx)) {
-                    tasks.add(HalloTasks.COLLECT);
-                    tasks.add(HalloTasks.SEARCH);
+                if(GauntletArea.RIVER.containsPlayer(ctx)) {
+                    tasks.add(GauntletTasks.COLLECT);
+                    tasks.add(GauntletTasks.SEARCH);
                 }
 
                 // Fallback to the meeting point if we can't get to the jettys
-                tasks.add(HalloTasks.TO_MEETING_POINT);
+                tasks.add(GauntletTasks.TO_MEETING_POINT);
                 break;
             case GUIDE:
-                tasks.add(HalloTasks.TO_JETTY_UP);
-                tasks.add(HalloTasks.DISEMBARK);
+                tasks.add(GauntletTasks.TO_JETTY_UP);
+                tasks.add(GauntletTasks.DISEMBARK);
 
-                final Npc souls = HalloNpc.RESCUED.find(ctx);
+                final Npc souls = GauntletNpc.RESCUED.find(ctx);
                 final boolean soulsNpcVisible = souls != null;
 
                 if(!soulsNpcVisible || !alreadyEscorting) {
-                    tasks.add(HalloTasks.TO_MEETING_POINT);
-                    tasks.add(HalloTasks.GUIDE_SOULS);
+                    tasks.add(GauntletTasks.TO_MEETING_POINT);
+                    tasks.add(GauntletTasks.GUIDE_SOULS);
                 }
 
                 boolean inSoulsArea = false;
                 if(soulsNpcVisible) {
-                    for (HalloArea combatArea : HalloArea.COMBAT_AREAS) {
+                    for (GauntletArea combatArea : GauntletArea.COMBAT_AREAS) {
                         if(combatArea.containsPlayer(ctx) && combatArea.contains(souls)) {
                             inSoulsArea = true;
-                            tasks.add(HalloTasks.SIPHON);
+                            tasks.add(GauntletTasks.SIPHON);
                         }
                     }
                 }
                 // Follow or search for souls NPC
                 if(!soulsNpcVisible || !inSoulsArea) {
-                    tasks.add(HalloTasks.TO_BRIDGE1);
-                    tasks.add(HalloTasks.TO_BRIDGE2);
-                    tasks.add(HalloTasks.TO_BRIDGE3);
+                    tasks.add(GauntletTasks.TO_BRIDGE1);
+                    tasks.add(GauntletTasks.TO_BRIDGE2);
+                    tasks.add(GauntletTasks.TO_BRIDGE3);
                 }
                 break;
         }
 
         // When in doubt, lode to burth or enter the portal
-        if(!HalloArea.BURTH_LODE.containsPlayer(ctx)) {
-            tasks.add(HalloTasks.BURTHORPE_LODE);
+        if(!GauntletArea.BURTH_LODE.containsPlayer(ctx)) {
+            tasks.add(GauntletTasks.BURTHORPE_LODE);
         } else {
-            tasks.add(HalloTasks.ENTER_RIFT);
+            tasks.add(GauntletTasks.ENTER_RIFT);
         }
         return tasks;
     }

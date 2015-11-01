@@ -1,11 +1,11 @@
-package com.ac1d.rsbot.hallo15.data;
+package com.ac1d.rsbot.gauntlet.data;
 
 import com.ac1d.rsbot.util.rt6.NpcInteractTask;
 import org.powerbot.script.Filter;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Npc;
 
-public enum HalloNpc {
+public enum GauntletNpc {
     WAYWARD("Rescue", "Wayward Soul", new IntRange(21945, 21976)),
     XP("Rescue", null, 21932), // Same for river and bridge souls
     RESCUED(null, "Rescued souls", 21934),
@@ -28,11 +28,11 @@ public enum HalloNpc {
     private final String name;
     private final int[] ids;
 
-    HalloNpc(String action, String name, IntRange range) {
+    GauntletNpc(String action, String name, IntRange range) {
         this(action, name, range.toArray());
     }
 
-    HalloNpc(String action, String name, int... ids) {
+    GauntletNpc(String action, String name, int... ids) {
         this.action = action;
         this.name = name;
         this.ids = ids;
@@ -42,7 +42,7 @@ public enum HalloNpc {
         return ctx.npcs.select().within(16).select(new Filter<Npc>() {
             @Override
             public boolean accept(Npc npc) {
-                switch(HalloNpc.this) {
+                switch(GauntletNpc.this) {
                     case WAYWARD:
                     case XP:
                         return npc.stance() == STANCE_VISIBLE;
@@ -71,9 +71,9 @@ public enum HalloNpc {
     }
 
     public static class InteractTask extends NpcInteractTask {
-        private final HalloNpc halloNpc;
+        private final GauntletNpc halloNpc;
 
-        public InteractTask(HalloNpc npc) {
+        public InteractTask(GauntletNpc npc) {
             super(npc.ids, npc.action, npc.name);
             halloNpc = npc;
         }

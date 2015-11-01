@@ -1,4 +1,4 @@
-package com.ac1d.rsbot.hallo15.data;
+package com.ac1d.rsbot.gauntlet.data;
 
 import com.ac1d.rsbot.util.AreaUtils;
 import com.ac1d.rsbot.util.Task;
@@ -10,7 +10,7 @@ import org.powerbot.script.rt6.Player;
 
 import java.util.HashMap;
 
-public enum HalloArea {
+public enum GauntletArea {
     BURTH_LODE      (0, 2880, 3547, 2904, 3554, false),
     MAIN            (1, 10509, 4868, 10545, 4986),
     RIVER           (0, 10498, 4877, 10558, 4986),
@@ -30,7 +30,7 @@ public enum HalloArea {
     // They seem to either have different instance locations, or moved the event after I measured everything
 
 
-    public static HalloArea[] COMBAT_AREAS = { BRIDGE1, BRIDGE2, BRIDGE3 };
+    public static GauntletArea[] COMBAT_AREAS = { BRIDGE1, BRIDGE2, BRIDGE3 };
 
     /**
      * Map of the possible areas for this instance, null key is non-offset
@@ -39,11 +39,11 @@ public enum HalloArea {
     private final boolean useOffsets;
     private Offset lastMatchedOffset;
 
-    HalloArea(int floor, int x1, int y1, int x2, int y2) {
+    GauntletArea(int floor, int x1, int y1, int x2, int y2) {
         this(floor,  x1,  y1,  x2,  y2, true);
     }
 
-    HalloArea(int floor, int x1, int y1, int x2, int y2, boolean useOffsets) {
+    GauntletArea(int floor, int x1, int y1, int x2, int y2, boolean useOffsets) {
         // Can't define this as a constant due to illegal forward referencing :(
         final Offset[] OFFSETS = {
                 new Offset(960, 0),
@@ -86,11 +86,11 @@ public enum HalloArea {
 
     // Copied MoveTask, allows for switching to other areas by the offset
     public static class MoveTask extends Task<ClientContext> {
-        private HalloArea mFrom;
-        private HalloArea mTo;
+        private GauntletArea mFrom;
+        private GauntletArea mTo;
         private boolean mMoved;
 
-        public MoveTask(HalloArea from, HalloArea to) {
+        public MoveTask(GauntletArea from, GauntletArea to) {
             mFrom = from;
             mTo = to;
         }

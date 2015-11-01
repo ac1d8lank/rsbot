@@ -1,8 +1,8 @@
-package com.ac1d.rsbot.hallo15.data;
+package com.ac1d.rsbot.gauntlet.data;
 
 import com.ac1d.rsbot.util.rt6.ObjectInteractTask;
 
-public enum HalloObject {
+public enum GauntletObject {
     BUBBLING_WATER  (100061, "Search", "Bubbling water"),
     JETTY_DOWN      (100046, "Embark", "Jetty"),
     JETTY_UP        (100047, "Disembark", "Jetty"),
@@ -14,14 +14,14 @@ public enum HalloObject {
     private final String action;
     private final String name;
 
-    HalloObject(int id, String action, String option) {
+    GauntletObject(int id, String action, String option) {
         this.id = id;
         this.action = action;
         this.name = option;
     }
 
     public static class ObjectTask extends ObjectInteractTask {
-        public ObjectTask(HalloObject o) {
+        public ObjectTask(GauntletObject o) {
             super(o.id, o.action, o.name);
         }
     }

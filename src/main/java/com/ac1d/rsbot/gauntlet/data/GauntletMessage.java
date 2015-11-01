@@ -1,9 +1,9 @@
-package com.ac1d.rsbot.hallo15.data;
+package com.ac1d.rsbot.gauntlet.data;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public enum HalloMessage {
+public enum GauntletMessage {
     AVATAR("<col=ce5200>The gates to the Underworld have been opened, Amascut's Avatar must be defeated!"),
     FAVOUR("You receive ([0-9]+) Noumenon Favour."),
     CHEST_SPAWN("The belongings of long passed adventurers have been spotted beneath the surface of the river."),
@@ -23,12 +23,12 @@ public enum HalloMessage {
 
     private final Pattern pattern;
 
-    HalloMessage(String regex) {
+    GauntletMessage(String regex) {
         pattern = Pattern.compile(regex);
     }
 
-    public static HalloMessage get(String msg) {
-        for(HalloMessage sysMsg : values()) {
+    public static GauntletMessage get(String msg) {
+        for(GauntletMessage sysMsg : values()) {
             if(sysMsg.pattern.matcher(msg).matches()) {
                 return sysMsg;
             }
