@@ -37,7 +37,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         if(!obj.valid()) {
             throw new Task.FailureException();
         }
-        if(obj instanceof Locatable && (!obj.inViewport() || Random.percent(15))) {
+        if(obj instanceof Locatable && (Random.percent(15) || !obj.inViewport())) {
             ctx.camera.turnTo((Locatable)obj);
             return;
         }
@@ -48,11 +48,11 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         }
 
         if(idle && !onInteractCooldown() && !onIdleDelay()) {
-            mDone = interact(obj, mAction, mOption);
-            if(mDone) {
+            if(interact(obj, mAction, mOption)) {
                 mInteractTime = System.currentTimeMillis();
                 afterInteract(obj);
             }
+            mDone = true;
         }
     }
 
