@@ -18,30 +18,25 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     private long mPollCount = 0;
 
-    protected String status;
     private boolean mRunning = false;
 
     @Override
     public void start() {
-        status = "Starting";
         mRunning = true;
     }
 
     @Override
     public void suspend() {
-        status = "Suspended";
         mRunning = false;
     }
 
     @Override
     public void resume() {
-        status = "Resuming";
         mRunning = true;
     }
 
     @Override
     public void stop() {
-        status = "Stopping";
         mRunning = false;
     }
 
@@ -109,15 +104,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
     }
 
     public void drawUI(Graphics g) {
-        g.setColor(Color.yellow);
-        g.fillRect(0, 0, 420, 70);
-
-        g.setColor(Color.black);
-        g.setFont(SANS);
-        g.drawString("AcidScript", 5, 25);
-        if(status != null) {
-            g.drawString("Status: "+ status, 5, 45);
-        }
+        // TODO: base UI here
     }
 
     public abstract TaskManager<C> getTaskManager();
