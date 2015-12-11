@@ -363,6 +363,7 @@ public class SkateManager extends TaskManager<ClientContext> {
     // Pathing goes current, same, same, diagonal, [diagonal]
     public static class Path {
         private ArrayList<Tile> tiles = new ArrayList<>();
+        private static final Stroke sDebugStroke = new BasicStroke(2);
 
         public Path(ClientContext ctx) {
             this(ctx, Lane.get(ctx.players.local()));
@@ -429,13 +430,15 @@ public class SkateManager extends TaskManager<ClientContext> {
 
         public void debugDraw(ClientContext ctx, Graphics g) {
             g.setColor(isBlocked(ctx) ? Color.RED : Color.BLUE);
+            final Stroke oldStroke = ((Graphics2D)g).getStroke();
+            ((Graphics2D)g).setStroke(sDebugStroke);
 
             for(int i = 0; i < tiles.size(); i++) {
                 final Tile t = tiles.get(i);
 
                 Point point = t.matrix(ctx).centerPoint();
                 if(point.x > 0 && point.y > 0) {
-                    g.fillOval(point.x-2, point.y-2, 4, 4);
+                    g.fillOval(point.x-3, point.y-3, 6, 6);
 
                     if(i > 0) {
                         Point prev = tiles.get(i - 1).matrix(ctx).centerPoint();
@@ -445,6 +448,7 @@ public class SkateManager extends TaskManager<ClientContext> {
                     }
                 }
             }
+            ((Graphics2D)g).setStroke(oldStroke);
         }
     }
 }
