@@ -121,9 +121,17 @@ public class SkateManager extends TaskManager<ClientContext> {
         WEST(3662, 3737, 3664, 3741),;
 
         public final Area area;
+        private final int width;
+        private final int height;
+        private final int left;
+        private final int bottom;
 
         Segment(int x1, int y1, int x2, int y2) {
             area = AreaUtils.inclusive(new Tile(x1, y1, 1), new Tile(x2, y2, 1));
+            width = Math.abs(x2 - x1);
+            height = Math.abs(y2 - y1);
+            left = Math.min(x1, x2);
+            bottom = Math.min(y1, y2);
         }
 
         public boolean containsPlayer(ClientContext ctx) {
@@ -141,6 +149,129 @@ public class SkateManager extends TaskManager<ClientContext> {
                 }
             }
             return null;
+        }
+
+        public Segment next() {
+            return values()[(ordinal() + 1) % values().length];
+        }
+
+        public Tile getTile(Lane l, int index) {
+            if(l == null) return null;
+
+            int x = left;
+            int y = bottom;
+
+            // Lane offset
+            switch(this) {
+                case NORTH:
+                    y += 2 - l.ordinal();
+                    break;
+                case EAST:
+                    x += 2 - l.ordinal();
+                    y += height;
+                    break;
+                case SOUTH:
+                    y += l.ordinal();
+                    x += width;
+                    break;
+                case WEST:
+                    x += l.ordinal();
+                    break;
+            }
+
+            // Maximum amount we can go straight in this lane
+            int laneLength = getLength();
+
+            // Outside adjustment part 1. We go one additionally straight
+            if(l == Lane.OUTSIDE) {
+                laneLength++;
+            }
+
+            // Amount to go straight
+            final int straightAmt = Math.min(index, laneLength);
+            switch(this) {
+                case NORTH:
+                    x += straightAmt;
+                    break;
+                case EAST:
+                    y -= straightAmt;
+                    break;
+                case SOUTH:
+                    x -= straightAmt;
+                    break;
+                case WEST:
+                    y += straightAmt;
+                    break;
+            }
+
+            // Amount to go after straight
+            final int diagonalRemainder = index - straightAmt;
+            final int diagonalMax = 2 - l.ordinal();
+            final int diagonalAmt = Math.min(diagonalMax, diagonalRemainder);
+
+            switch(this) {
+                case NORTH:
+                    x += diagonalAmt;
+                    y -= diagonalAmt;
+                    break;
+                case EAST:
+                    y -= diagonalAmt;
+                    x -= diagonalAmt;
+                    break;
+                case SOUTH:
+                    x -= diagonalAmt;
+                    y += diagonalAmt;
+                    break;
+                case WEST:
+                    y += diagonalAmt;
+                    x += diagonalAmt;
+                    break;
+            }
+
+            int finalRemainder = diagonalRemainder - diagonalAmt;
+
+            // Outside adjustment part 2. We go one additionally perpendicular
+            if(l == Lane.OUTSIDE && finalRemainder > 0) {
+                finalRemainder--;
+                switch(this) {
+                    case NORTH:
+                        y--;
+                        break;
+                    case EAST:
+                        x--;
+                        break;
+                    case SOUTH:
+                        y++;
+                        break;
+                    case WEST:
+                        x++;
+                        break;
+                }
+            }
+
+            if(finalRemainder == 0) {
+                return new Tile(x, y, 1);
+            } else {
+                return next().getTile(l, finalRemainder - 1);
+            }
+        }
+
+        private int getLength() {
+            if(this == NORTH || this == SOUTH) {
+                return width;
+            } else {
+                return height;
+            }
+        }
+
+        public int getIndex(Tile position) {
+            final Lane l = Lane.get(position);
+            for(int i = 0; i < getLength(); i++) {
+                if(position.equals(getTile(l, i))) {
+                    return i;
+                }
+            }
+            return getLength();
         }
     }
 
@@ -174,8 +305,8 @@ public class SkateManager extends TaskManager<ClientContext> {
             final Segment s  = Segment.get(loc);
             if(s == null) return null;
 
-            final int relX = loc.tile().x() - s.area.getPolygon().getBounds().x;
-            final int relY = loc.tile().y() - s.area.getPolygon().getBounds().y;
+            final int relX = loc.tile().x() - s.left;
+            final int relY = loc.tile().y() - s.bottom;
 
             final int ordinal;
 
@@ -202,7 +333,7 @@ public class SkateManager extends TaskManager<ClientContext> {
 
     // Pathing goes current, same, same, diagonal, [diagonal]
     public static class Path {
-        private Tile[] tiles;
+        private ArrayList<Tile> tiles = new ArrayList<>();
 
         public Path(ClientContext ctx) {
             this(ctx, Lane.get(ctx.players.local()));
@@ -219,53 +350,23 @@ public class SkateManager extends TaskManager<ClientContext> {
             final Lane from = Lane.get(position);
             if(from == null) return;
 
-            /** Whether the player will be turning "right" on this path */
-            final boolean right = from.ordinal() < to.ordinal();
-            /** Number of lanes we're changing */
-            final int distance = Math.abs(from.ordinal() - to.ordinal());
+            final int direction = to.ordinal() > from.ordinal() ? 1 : -1;
 
-            tiles = new Tile[4 + distance];
+            Lane l = from;
 
-            int x = position.x();
-            int y = position.y();
-
-            for(int i = 0; i < tiles.length; i++) {
-                // Direction of motion
-                switch(s) {
-                    case NORTH:
-                        x++;
-                        break;
-                    case EAST:
-                        y--;
-                        break;
-                    case SOUTH:
-                        x--;
-                        break;
-                    case WEST:
-                        y++;
-                        break;
+            int idx = s.getIndex(position);
+            tiles.add(s.getTile(l, ++idx));
+            tiles.add(s.getTile(l, ++idx));
+            while(l != to) {
+                l = Lane.values()[l.ordinal() + direction];
+                if(l != to) {
+                    tiles.add(s.getTile(l, ++idx));
                 }
-
-                // Go diagonal for middle tiles
-                if(i >= 2 && i < 2 + distance) {
-                    switch(s) {
-                        case NORTH:
-                            y += right ? -1 : 1;
-                            break;
-                        case EAST:
-                            x += right ? -1 : 1;
-                            break;
-                        case SOUTH:
-                            y += right ? 1 : -1;
-                            break;
-                        case WEST:
-                            x += right ? 1 : -1;
-                            break;
-                    }
-                }
-
-                tiles[i] = new Tile(x, y);
             }
+            tiles.add(s.getTile(l, ++idx));
+            tiles.add(s.getTile(l, ++idx));
+            tiles.add(s.getTile(l, ++idx));
+            tiles.add(s.getTile(l, ++idx));
         }
 
         public boolean isBlocked(ClientContext ctx) {
@@ -273,9 +374,6 @@ public class SkateManager extends TaskManager<ClientContext> {
         }
 
         private boolean contains(Locatable loc) {
-            if(tiles == null) return false;
-
-
             final Tile locTile = loc.tile();
             for (Tile t : tiles) {
                 if (t.x() == locTile.x() && t.y() == locTile.y()) {
@@ -300,8 +398,6 @@ public class SkateManager extends TaskManager<ClientContext> {
         };
 
         public void debugDraw(ClientContext ctx, Graphics g) {
-            if(tiles == null) return;
-
             g.setColor(isBlocked(ctx) ? Color.RED : Color.BLUE);
 
             for(Tile t : tiles) {
