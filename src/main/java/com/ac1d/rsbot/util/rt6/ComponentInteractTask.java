@@ -16,6 +16,11 @@ public class ComponentInteractTask extends InteractTask<Component> {
     }
 
     @Override
+    public boolean isReady(ClientContext ctx) {
+        return getEntity(ctx).visible() && super.isReady(ctx);
+    }
+
+    @Override
     protected Component getEntity(ClientContext ctx) {
         final Widget w = ctx.widgets.widget(mWidget);
         Component c = null;
