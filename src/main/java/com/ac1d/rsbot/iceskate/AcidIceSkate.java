@@ -27,8 +27,10 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
     @Override
     public void drawUI(Graphics g) {
         super.drawUI(g);
-        Player p = ctx.players.local();
-        g.drawString("Task: "+mManager.currentTask()+" RINK?: "+SkateManager.RINK.contains(p)+" INNER?: "+SkateManager.INNER.contains(p)+" PENG?: "+mManager.mHitPenguin, 20, 20);
+        if(mManager != null) {
+            final Player p = ctx.players.local();
+            g.drawString("Task: " + mManager.currentTask() + " RINK?: " + SkateManager.RINK.contains(p) + " INNER?: " + SkateManager.INNER.contains(p) + " PENG?: " + mManager.mHitPenguin, 20, 20);
+        }
     }
 
 }

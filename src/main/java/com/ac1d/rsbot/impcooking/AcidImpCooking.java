@@ -1,11 +1,9 @@
 package com.ac1d.rsbot.impcooking;
 
-import com.ac1d.rsbot.iceskate.SkateManager;
 import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.TaskManager;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.Player;
 
 import java.awt.*;
 
@@ -20,7 +18,7 @@ public class AcidImpCooking extends AcidScript<ClientContext> {
     }
 
     @Override
-    public TaskManager getTaskManager() {
+    public TaskManager<ClientContext> getTaskManager() {
         return mManager;
     }
 
@@ -28,7 +26,9 @@ public class AcidImpCooking extends AcidScript<ClientContext> {
     @Override
     public void drawUI(Graphics g) {
         super.drawUI(g);
-        g.drawString("Task: "+mManager.currentTask()+" INST: "+CookingManager.Food.getInstruction(ctx), 20, 20);
+        if(mManager != null) {
+            g.drawString("Task: " + mManager.currentTask() + " INST: " + CookingManager.Food.getInstruction(ctx), 20, 20);
+        }
     }
 
 }
