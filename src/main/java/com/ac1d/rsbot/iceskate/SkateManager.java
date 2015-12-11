@@ -46,22 +46,12 @@ public class SkateManager extends TaskManager<ClientContext> {
     private final ComponentInteractTask MIDDLE_LANE = new ComponentInteractTask("Select", 1697, 21);
     private final ComponentInteractTask INSIDE_LANE = new ComponentInteractTask("Select", 1697, 29) {
         @Override
-        protected long getIdleDelayMillis() {
-            return 0; // We'll be non-idle while skating
-        }
-
-        @Override
         public boolean isDone(ClientContext ctx) {
             return INNER.contains(ctx.players.local()) || super.isDone(ctx);
         }
     };
 
     private final ComponentInteractTask EXIT_RINK = new ComponentInteractTask("Select", 1697, 37) {
-        @Override
-        protected long getIdleDelayMillis() {
-            return 0; // We'll be non-idle while skating
-        }
-
         @Override
         public void onFinish(boolean success) {
             super.onFinish(success);
