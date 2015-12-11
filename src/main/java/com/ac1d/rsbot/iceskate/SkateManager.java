@@ -9,6 +9,7 @@ import org.powerbot.script.Area;
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class SkateManager extends TaskManager<ClientContext> {
     public List<Task<ClientContext>> getAvailableTasks() {
         ArrayList<Task<ClientContext>> tasks = new ArrayList<>();
 
-        if(mHitPenguin) {
+        if(mHitPenguin || isWalkGlitch()) {
             tasks.add(EXIT_RINK);
         }
 
@@ -109,6 +110,11 @@ public class SkateManager extends TaskManager<ClientContext> {
                 mHitPenguin = true;
             }
         }
+    }
+
+    private boolean isWalkGlitch() {
+        final Player p = ctx.players.local();
+        return p.stance() == 18040 && RINK.contains(p);
     }
 
     private static boolean isSkating(ClientContext ctx) {
