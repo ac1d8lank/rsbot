@@ -439,7 +439,9 @@ public class SkateManager extends TaskManager<ClientContext> {
 
                     if(i > 0) {
                         Point prev = tiles.get(i - 1).matrix(ctx).centerPoint();
-                        g.drawLine(point.x, point.y, prev.x, prev.y);
+                        if(prev.x > 0 && prev.y > 0) {
+                            g.drawLine(point.x, point.y, prev.x, prev.y);
+                        }
                     }
                 }
             }
