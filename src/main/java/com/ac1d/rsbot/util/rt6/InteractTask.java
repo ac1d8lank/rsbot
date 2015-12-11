@@ -47,7 +47,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
             mIdleStartTime = System.currentTimeMillis();
         }
 
-        if(idle && !onInteractCooldown() && !onIdleDelay()) {
+        if((idle || getIdleDelayMillis() == 0) && !onInteractCooldown() && !onIdleDelay()) {
             if(interact(obj, mAction, mOption)) {
                 mInteractTime = System.currentTimeMillis();
                 afterInteract(obj);
@@ -57,7 +57,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
     }
 
     protected boolean interact(O obj, String action, String option) {
-        return obj.interact(action, option);
+        return option != null ? obj.interact(action, option) : obj.interact(action);
     }
 
     /** Called after each successful interaction */
