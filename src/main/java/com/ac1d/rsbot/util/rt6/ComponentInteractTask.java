@@ -16,8 +16,8 @@ public class ComponentInteractTask extends InteractTask<Component> {
     }
 
     @Override
-    public boolean isReady(ClientContext ctx) {
-        return getEntity(ctx).visible() && super.isReady(ctx);
+    protected long getIdleDelayMillis() {
+        return 0;
     }
 
     @Override
