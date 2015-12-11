@@ -1,15 +1,13 @@
 package com.ac1d.rsbot.iceskate;
 
-import com.ac1d.rsbot.util.AreaUtils;
-import com.ac1d.rsbot.util.Task;
-import com.ac1d.rsbot.util.TaskManager;
+import com.ac1d.rsbot.util.*;
+import com.ac1d.rsbot.util.Random;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
 import com.ac1d.rsbot.util.rt6.NpcInteractTask;
 import org.powerbot.script.*;
+import org.powerbot.script.rt6.*;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
-import org.powerbot.script.rt6.Npc;
-import org.powerbot.script.rt6.Player;
+import org.powerbot.script.rt6.Component;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -85,6 +83,8 @@ public class SkateManager extends TaskManager<ClientContext> {
             tasks.add(Lane.INNER.task);
         }
 
+        tasks.add(RANDOM_LOOK);
+
         return tasks;
     }
 
@@ -113,6 +113,30 @@ public class SkateManager extends TaskManager<ClientContext> {
                 return false;
         }
     }
+
+    private static final Task<ClientContext> RANDOM_LOOK = new Task<ClientContext>() {
+        public boolean mDone;
+
+        @Override
+        public boolean isReady(ClientContext ctx) {
+            return com.ac1d.rsbot.util.Random.oneIn(100);
+        }
+
+        @Override
+        public void onPoll(ClientContext ctx) throws FailureException {
+            ctx.camera.angle(90 * Random.get(3) + Random.get(-10, 10));
+            mDone = true;
+        }
+
+        @Override
+        public boolean isDone(ClientContext ctx) {
+            if(mDone) {
+                mDone = false;
+                return true;
+            }
+            return false;
+        }
+    };
 
     public enum Segment {
         NORTH(3665, 3742, 3680, 3744),
@@ -291,6 +315,11 @@ public class SkateManager extends TaskManager<ClientContext> {
                 }
 
                 @Override
+                protected boolean interact(Component obj, String action, String option) {
+                    return obj.click();
+                }
+
+                @Override
                 public boolean isDone(ClientContext ctx) {
                     return ofPlayer(ctx) == Lane.this;
                 }
@@ -367,6 +396,7 @@ public class SkateManager extends TaskManager<ClientContext> {
             tiles.add(s.getTile(l, ++idx));
             tiles.add(s.getTile(l, ++idx));
             tiles.add(s.getTile(l, ++idx));
+            tiles.add(s.getTile(l, ++idx));
         }
 
         public boolean isBlocked(ClientContext ctx) {
@@ -400,8 +430,18 @@ public class SkateManager extends TaskManager<ClientContext> {
         public void debugDraw(ClientContext ctx, Graphics g) {
             g.setColor(isBlocked(ctx) ? Color.RED : Color.BLUE);
 
-            for(Tile t : tiles) {
-                ((Graphics2D)g).draw(t.matrix(ctx).bounds());
+            for(int i = 0; i < tiles.size(); i++) {
+                final Tile t = tiles.get(i);
+
+                Point point = t.matrix(ctx).centerPoint();
+                if(point.x > 0 && point.y > 0) {
+                    g.fillOval(point.x-2, point.y-2, 4, 4);
+
+                    if(i > 0) {
+                        Point prev = tiles.get(i - 1).matrix(ctx).centerPoint();
+                        g.drawLine(point.x, point.y, prev.x, prev.y);
+                    }
+                }
             }
         }
     }
