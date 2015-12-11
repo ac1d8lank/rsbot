@@ -64,9 +64,7 @@ public class SkateManager extends TaskManager<ClientContext> {
         @Override
         public void onFinish(boolean success) {
             super.onFinish(success);
-            if(success) {
-                mHitPenguin = false;
-            }
+            mHitPenguin = false;
         }
     };
 
@@ -106,7 +104,7 @@ public class SkateManager extends TaskManager<ClientContext> {
     public void onMessage(MessageEvent messageEvent) {
         super.onMessage(messageEvent);
 
-        if(messageEvent.source() == null) {
+        if(messageEvent.source() == null || messageEvent.source().isEmpty()) {
             if(PENGUIN.matcher(messageEvent.text()).matches()) {
                 mHitPenguin = true;
             }
