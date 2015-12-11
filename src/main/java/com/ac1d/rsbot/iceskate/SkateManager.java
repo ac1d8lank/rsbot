@@ -5,15 +5,15 @@ import com.ac1d.rsbot.util.Task;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
 import com.ac1d.rsbot.util.rt6.NpcInteractTask;
-import org.powerbot.script.Area;
-import org.powerbot.script.MessageEvent;
-import org.powerbot.script.Tile;
+import org.powerbot.script.*;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.GameObject;
+import org.powerbot.script.rt6.Npc;
 import org.powerbot.script.rt6.Player;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SkateManager extends TaskManager<ClientContext> {
@@ -42,15 +42,6 @@ public class SkateManager extends TaskManager<ClientContext> {
         }
     };
 
-    private final ComponentInteractTask OUTSIDE_LANE = new ComponentInteractTask("Select", 1697, 13);
-    private final ComponentInteractTask MIDDLE_LANE = new ComponentInteractTask("Select", 1697, 21);
-    private final ComponentInteractTask INSIDE_LANE = new ComponentInteractTask("Select", 1697, 29) {
-        @Override
-        public boolean isDone(ClientContext ctx) {
-            return INNER.contains(ctx.players.local()) || super.isDone(ctx);
-        }
-    };
-
     private final ComponentInteractTask EXIT_RINK = new ComponentInteractTask("Select", 1697, 37) {
         @Override
         public void onFinish(boolean success) {
@@ -64,7 +55,7 @@ public class SkateManager extends TaskManager<ClientContext> {
     private final Pattern SIR_AMIK = Pattern.compile("You bump into Sir Amik Varze who spills his drink and promptly escorts you off the course\\.");
 
     public static final Area RINK = AreaUtils.inclusive(new Tile(3662, 3734, 1), new Tile(3683, 3744, 1));
-    public static final Area INNER = AreaUtils.inclusive(new Tile(3664, 3736, 1), new Tile(3681, 3742, 1));
+    public static final Area AREA_INNER = AreaUtils.inclusive(new Tile(3664, 3736, 1), new Tile(3681, 3742, 1));
 
     public boolean mHitPenguin = false;
 
@@ -84,8 +75,14 @@ public class SkateManager extends TaskManager<ClientContext> {
             tasks.add(START_SKATING);
         }
 
-        if(!INNER.contains(ctx.players.local())) {
-            tasks.add(INSIDE_LANE);
+        if(new Path(ctx).isBlocked(ctx)) {
+            tasks.add(Lane.INNER.task);
+            tasks.add(Lane.MIDDLE.task);
+            tasks.add(Lane.OUTSIDE.task);
+        }
+        // Always try to get back to the inner lane if possible
+        if(!AREA_INNER.contains(ctx.players.local())) {
+            tasks.add(Lane.INNER.task);
         }
 
         return tasks;
@@ -114,6 +111,202 @@ public class SkateManager extends TaskManager<ClientContext> {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    public enum Segment {
+        NORTH(3665, 3742, 3680, 3744),
+        EAST(3681, 3737, 3683, 3741),
+        SOUTH(3665, 3734, 3680, 3736),
+        WEST(3662, 3737, 3664, 3741),;
+
+        public final Area area;
+
+        Segment(int x1, int y1, int x2, int y2) {
+            area = AreaUtils.inclusive(new Tile(x1, y1, 1), new Tile(x2, y2, 1));
+        }
+
+        public boolean containsPlayer(ClientContext ctx) {
+            return area.contains(ctx.players.local());
+        }
+
+        public static Segment ofPlayer(ClientContext ctx) {
+            return get(ctx.players.local());
+        }
+
+        public static Segment get(Locatable loc) {
+            for(Segment s : values()) {
+                if(s.area.contains(loc)) {
+                    return s;
+                }
+            }
+            return null;
+        }
+    }
+
+    public enum Lane {
+        OUTSIDE (1697, 13),
+        MIDDLE  (1697, 21),
+        INNER   (1697, 29),
+        ;
+
+        public final ComponentInteractTask task;
+
+        Lane(int widget, int component) {
+            task = new ComponentInteractTask("Select", widget, component) {
+                @Override
+                public boolean isReady(ClientContext ctx) {
+                    return !(new Path(ctx, Lane.this).isBlocked(ctx)) && super.isReady(ctx);
+                }
+
+                @Override
+                public boolean isDone(ClientContext ctx) {
+                    return ofPlayer(ctx) == Lane.this;
+                }
+            };
+        }
+
+        public static Lane ofPlayer(ClientContext ctx) {
+            return get(ctx.players.local());
+        }
+
+        public static Lane get(Locatable loc) {
+            final Segment s  = Segment.get(loc);
+            if(s == null) return null;
+
+            final int relX = loc.tile().x() - s.area.getPolygon().getBounds().x;
+            final int relY = loc.tile().y() - s.area.getPolygon().getBounds().y;
+
+            final int ordinal;
+
+            switch(s) {
+                case NORTH:
+                    ordinal = 2 - relY;
+                    break;
+                case EAST:
+                    ordinal = 2 - relX;
+                    break;
+                case SOUTH:
+                    ordinal = relY;
+                    break;
+                case WEST:
+                    ordinal = relX;
+                    break;
+                default:
+                    return null;
+            }
+
+            return Lane.values()[ordinal];
+        }
+    }
+
+    // Pathing goes current, same, same, diagonal, [diagonal]
+    public static class Path {
+        private Tile[] tiles;
+
+        public Path(ClientContext ctx) {
+            this(ctx, Lane.get(ctx.players.local()));
+        }
+
+        public Path(ClientContext ctx, Lane to) {
+            this(ctx.players.local().tile(), to);
+        }
+
+        public Path(Tile position, Lane to) {
+            final Segment s = Segment.get(position);
+            if(s == null) return;
+
+            final Lane from = Lane.get(position);
+            if(from == null) return;
+
+            /** Whether the player will be turning "right" on this path */
+            final boolean right = from.ordinal() < to.ordinal();
+            /** Number of lanes we're changing */
+            final int distance = Math.abs(from.ordinal() - to.ordinal());
+
+            tiles = new Tile[4 + distance];
+
+            int x = position.x();
+            int y = position.y();
+
+            for(int i = 0; i < tiles.length; i++) {
+                // Direction of motion
+                switch(s) {
+                    case NORTH:
+                        x++;
+                        break;
+                    case EAST:
+                        y--;
+                        break;
+                    case SOUTH:
+                        x--;
+                        break;
+                    case WEST:
+                        y++;
+                        break;
+                }
+
+                // Go diagonal for middle tiles
+                if(i >= 2 && i < 2 + distance) {
+                    switch(s) {
+                        case NORTH:
+                            y += right ? -1 : 1;
+                            break;
+                        case EAST:
+                            x += right ? -1 : 1;
+                            break;
+                        case SOUTH:
+                            y += right ? 1 : -1;
+                            break;
+                        case WEST:
+                            x += right ? 1 : -1;
+                            break;
+                    }
+                }
+
+                tiles[i] = new Tile(x, y);
+            }
+        }
+
+        public boolean isBlocked(ClientContext ctx) {
+            return ctx.npcs.select().select(npcFilter).size() > 0 || ctx.objects.select().select(objectFilter).size() > 0;
+        }
+
+        private boolean contains(Locatable loc) {
+            if(tiles == null) return false;
+
+
+            final Tile locTile = loc.tile();
+            for (Tile t : tiles) {
+                if (t.x() == locTile.x() && t.y() == locTile.y()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private final Filter<Npc> npcFilter = new Filter<Npc>() {
+            @Override
+            public boolean accept(Npc npc) {
+                return (npc.id() == 22021 || npc.id() == 22022) && contains(npc);
+            }
+        };
+
+        private final Filter<GameObject> objectFilter = new Filter<GameObject>() {
+            @Override
+            public boolean accept(GameObject obj) {
+                return (obj.id() == 100381) && contains(obj);
+            }
+        };
+
+        public void debugDraw(ClientContext ctx, Graphics g) {
+            if(tiles == null) return;
+
+            g.setColor(isBlocked(ctx) ? Color.RED : Color.BLUE);
+
+            for(Tile t : tiles) {
+                ((Graphics2D)g).draw(t.matrix(ctx).bounds());
+            }
         }
     }
 }
