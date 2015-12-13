@@ -2,7 +2,6 @@ package com.ac1d.rsbot.util;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class AcidGUI {
@@ -29,6 +28,10 @@ public class AcidGUI {
     private static String subtitle = "v1.01";
     private static LinkedHashMap<String, String> data = new LinkedHashMap<>();
 
+
+    public static void setTitle(String title) {
+        AcidGUI.title = title;
+    }
     public static void setData(String key, Object value) {
         data.put(key, value != null ? value.toString() : "");
     }

@@ -6,16 +6,18 @@ import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener {
 
-    /*
-     * Might want to make this a stack?
-     * If override returns a RETRY, would we want to retry both? Or are we okay with knocking it out
-     * If we knock it out, make sure to reset any kind of retry counter
-     */
     private Task<C> mCurrentTask;
 
     private long mPollCount = 0;
 
     private boolean mRunning = false;
+
+    public AcidScript() {
+        Script.Manifest mani = getClass().getAnnotation(Script.Manifest.class);
+        if(mani != null) {
+            AcidGUI.setTitle(mani.name());
+        }
+    }
 
     @Override
     public void start() {
