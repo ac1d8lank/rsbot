@@ -84,13 +84,13 @@ public class SkateManager extends TaskManager<ClientContext> {
         }
 
         if(new Path(ctx).isBlocked(ctx)) {
-            tasks.add(Lane.INNER.task);
+            tasks.add(Lane.INSIDE.task);
             tasks.add(Lane.MIDDLE.task);
             tasks.add(Lane.OUTSIDE.task);
         }
         // Always try to get back to the inner lane if possible
         if(!AREA_INNER.contains(ctx.players.local())) {
-            tasks.add(Lane.INNER.task);
+            tasks.add(Lane.INSIDE.task);
         }
 
         tasks.add(RANDOM_LOOK);

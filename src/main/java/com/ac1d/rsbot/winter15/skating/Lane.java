@@ -8,7 +8,7 @@ import org.powerbot.script.rt6.Component;
 public enum Lane {
     OUTSIDE (1697, 13),
     MIDDLE  (1697, 21),
-    INNER   (1697, 29),
+    INSIDE  (1697, 29),
     ;
 
     public final ComponentInteractTask task;
