@@ -1,4 +1,4 @@
-package com.ac1d.rsbot.winter15.cooking;
+package com.ac1d.rsbot.xmas15.cooking;
 
 import com.ac1d.rsbot.util.Random;
 import com.ac1d.rsbot.util.Task;

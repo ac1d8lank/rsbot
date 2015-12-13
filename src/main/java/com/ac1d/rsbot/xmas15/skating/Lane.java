@@ -1,4 +1,4 @@
-package com.ac1d.rsbot.winter15.skating;
+package com.ac1d.rsbot.xmas15.skating;
 
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
 import org.powerbot.script.Locatable;
