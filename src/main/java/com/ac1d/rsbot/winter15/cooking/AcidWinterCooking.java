@@ -1,4 +1,4 @@
-package com.ac1d.rsbot.impcooking;
+package com.ac1d.rsbot.winter15.cooking;
 
 import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.TaskManager;
@@ -7,8 +7,8 @@ import org.powerbot.script.rt6.ClientContext;
 
 import java.awt.*;
 
-@Script.Manifest(name = "Acid Imp Cooking", description = "Cooks at winter event")
-public class AcidImpCooking extends AcidScript<ClientContext> {
+@Script.Manifest(name = "Acid Winter Cooking", description = "Cooks food at winter event")
+public class AcidWinterCooking extends AcidScript<ClientContext> {
     private CookingManager mManager;
 
     @Override

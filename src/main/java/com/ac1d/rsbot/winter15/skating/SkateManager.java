@@ -1,4 +1,4 @@
-package com.ac1d.rsbot.iceskate;
+package com.ac1d.rsbot.winter15.skating;
 
 import com.ac1d.rsbot.util.*;
 import com.ac1d.rsbot.util.Random;

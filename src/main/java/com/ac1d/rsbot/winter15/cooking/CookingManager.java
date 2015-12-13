@@ -1,10 +1,9 @@
-package com.ac1d.rsbot.impcooking;
+package com.ac1d.rsbot.winter15.cooking;
 
 import com.ac1d.rsbot.util.Random;
 import com.ac1d.rsbot.util.Task;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
-import org.powerbot.script.rt6.Camera;
 import org.powerbot.script.rt6.ClientContext;
 
 import java.util.ArrayList;
