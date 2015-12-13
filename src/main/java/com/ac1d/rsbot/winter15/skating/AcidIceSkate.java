@@ -6,12 +6,13 @@ import com.ac1d.rsbot.util.TaskManager;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
-import org.powerbot.script.rt6.Skills;
 
 import java.awt.*;
 
 @Script.Manifest(name = "AcidIceSkate", description = "Ice Skates at the 2015 Christmas Event for Agility (Live and Let Slide)", properties = "client=6;hidden=false;vip=false;")
 public class AcidIceSkate extends AcidScript<ClientContext> {
+    private static final boolean DEBUG = false;
+
     private SkateManager mManager;
     private int mStartXp;
 
@@ -43,7 +44,9 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
             AcidGUI.setData("XP Gained", xp);
             AcidGUI.setData("XP/hr", (xp * 60 * 60 * 1000) / runtime);
 
-            AcidGUI.setData("Task", mManager.currentTask());
+            if(DEBUG) {
+                AcidGUI.setData("Task", mManager.currentTask());
+            }
             AcidGUI.setData("Segment", Segment.ofPlayer(ctx));
             AcidGUI.setData("Lane", Lane.ofPlayer(ctx));
         }
@@ -53,8 +56,11 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
     public void onDraw(Graphics2D g2d) {
         super.onDraw(g2d);
 
-        for(Lane l : Lane.values()) {
-            new Path(ctx, l).debugDraw(ctx, g2d);
+        if(DEBUG) {
+            Path.onDraw();
+            for (Lane l : Lane.values()) {
+                new Path(ctx, l).debugDraw(ctx, g2d);
+            }
         }
     }
 }

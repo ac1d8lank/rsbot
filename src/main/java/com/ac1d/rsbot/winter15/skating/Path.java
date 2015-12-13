@@ -9,10 +9,12 @@ import org.powerbot.script.rt6.Npc;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Path {
     private ArrayList<Tile> tiles = new ArrayList<>();
     private static final Stroke sDebugStroke = new BasicStroke(2);
+    private static final HashMap<Tile, Point> sDebugPoints = new HashMap<>();
 
     public Path(ClientContext ctx) {
         this(ctx, Lane.get(ctx.players.local()));
@@ -77,6 +79,10 @@ public class Path {
         }
     };
 
+    public static void onDraw() {
+        sDebugPoints.clear();
+    }
+
     public void debugDraw(ClientContext ctx, Graphics g) {
         g.setColor(isBlocked(ctx) ? Color.RED : Color.BLUE);
         final Stroke oldStroke = ((Graphics2D)g).getStroke();
@@ -85,12 +91,12 @@ public class Path {
         for(int i = 0; i < tiles.size(); i++) {
             final Tile t = tiles.get(i);
 
-            Point point = t.matrix(ctx).centerPoint();
+            Point point = getPoint(ctx, t);
             if(point.x > 0 && point.y > 0) {
                 g.fillOval(point.x-3, point.y-3, 6, 6);
 
                 if(i > 0) {
-                    Point prev = tiles.get(i - 1).matrix(ctx).centerPoint();
+                    Point prev = getPoint(ctx, tiles.get(i - 1));
                     if(prev.x > 0 && prev.y > 0) {
                         g.drawLine(point.x, point.y, prev.x, prev.y);
                     }
@@ -98,5 +104,12 @@ public class Path {
             }
         }
         ((Graphics2D)g).setStroke(oldStroke);
+    }
+
+    private Point getPoint(ClientContext ctx, Tile t) {
+        if(!sDebugPoints.containsKey(t)) {
+            sDebugPoints.put(t, t.matrix(ctx).centerPoint());
+        }
+        return sDebugPoints.get(t);
     }
 }
