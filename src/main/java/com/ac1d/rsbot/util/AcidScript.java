@@ -6,11 +6,6 @@ import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener {
 
-    /*
-     * Might want to make this a stack?
-     * If override returns a RETRY, would we want to retry both? Or are we okay with knocking it out
-     * If we knock it out, make sure to reset any kind of retry counter
-     */
     private Task<C> mCurrentTask;
 
     private long mPollCount = 0;
@@ -40,10 +35,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
     @Override
     public final void poll() {
         mPollCount++;
-        if(Random.percent(95) && (mPollCount % 2 == 0 || Random.percent(5))) {
-            // Usually skip every other poll
-            return;
-        }
 
         final TaskManager<C> manager = getTaskManager();
         if(manager == null) {
