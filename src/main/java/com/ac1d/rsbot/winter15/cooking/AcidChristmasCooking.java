@@ -24,8 +24,8 @@ public class AcidChristmasCooking extends AcidScript<ClientContext> {
 
 
     @Override
-    public void drawUI(Graphics g) {
-        super.drawUI(g);
+    public void onDraw(Graphics2D g) {
+        super.onDraw(g);
         if(mManager != null) {
             g.drawString("Task: " + mManager.currentTask() + " INST: " + CookingManager.Food.getInstruction(ctx), 20, 20);
         }
