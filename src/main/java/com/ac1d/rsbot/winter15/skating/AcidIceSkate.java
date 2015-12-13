@@ -33,8 +33,8 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
         if(mManager != null) {
             final long runtime = ctx.controller.script().getRuntime();
             final int runHours = (int) (runtime / (60 * 60 * 1000));
-            final int runMins = (int) runtime / (60 * 1000);
-            final int runSecs = (int) runtime / 1000;
+            final int runMins = (int) (runtime / (60 * 1000)) % 60;
+            final int runSecs = (int) (runtime / 1000) % 60;
 
             AcidGUI.setData("Uptime", String.format("%02d:%02d:%02d", runHours, runMins, runSecs));
 
