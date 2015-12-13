@@ -9,7 +9,7 @@ public class AcidGUI {
 
     // Sizes
     private static final int MARGIN = 10;
-    private static final int PADDING = 4;
+    private static final int PADDING = 6;
     private static final int MIN_WIDTH = 10;
     private static final int MIN_HEIGHT = 10;
 
@@ -42,8 +42,8 @@ public class AcidGUI {
         g.translate(MARGIN, MARGIN);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        final int w = getWidth(g);
-        final int h = getHeight(g);
+        int w = getWidth(g);
+        int h = getHeight(g);
 
         // Box
         g.setColor(BACKGROUND);
@@ -53,6 +53,8 @@ public class AcidGUI {
 
         // Text
         g.translate(PADDING, PADDING);
+        w -= 2 * PADDING;
+        h -= 2 * PADDING;
 
         // Titles
         g.setFont(TITLE);
