@@ -6,9 +6,6 @@ import java.awt.*;
 
 public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener {
 
-    /** Acid on the eyes */
-    public static final Font SANS = new Font("Comic Sans MS", Font.BOLD, 20);
-
     /*
      * Might want to make this a stack?
      * If override returns a RETRY, would we want to retry both? Or are we okay with knocking it out
@@ -94,17 +91,23 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public final void repaint(Graphics g) {
+        if(!(g instanceof Graphics2D)) return;
+        final Graphics2D g2d = (Graphics2D) g;
         if(!mRunning) {
             return;
         }
-        drawUI(g);
+        onGUI();
+        onDraw(g2d);
         if(mCurrentTask != null) {
-            mCurrentTask.debugDraw(ctx, g);
+            mCurrentTask.debugDraw(ctx, g2d);
         }
     }
 
-    public void drawUI(Graphics g) {
-        // TODO: base UI here
+    public void onGUI() {
+    }
+
+    public void onDraw(Graphics2D g2d) {
+        AcidGUI.draw(g2d);
     }
 
     public abstract TaskManager<C> getTaskManager();
