@@ -1,6 +1,6 @@
 package com.ac1d.rsbot.util.rt6;
 
-import com.ac1d.rsbot.util.Random;
+import com.ac1d.rsbot.util.RandomUtils;
 import com.ac1d.rsbot.util.Task;
 import org.powerbot.script.Interactive;
 import org.powerbot.script.Locatable;
@@ -37,7 +37,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         if(!obj.valid()) {
             throw new Task.FailureException();
         }
-        if(obj instanceof Locatable && (Random.percent(15) || !obj.inViewport())) {
+        if(obj instanceof Locatable && (RandomUtils.percent(15) || !obj.inViewport())) {
             ctx.camera.turnTo((Locatable)obj);
             return;
         }

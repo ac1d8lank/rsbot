@@ -42,10 +42,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
     @Override
     public final void poll() {
         mPollCount++;
-        if(Random.percent(95) && (mPollCount % 2 == 0 || Random.percent(5))) {
-            // Usually skip every other poll
-            return;
-        }
 
         final TaskManager<C> manager = getTaskManager();
         if(manager == null) {
