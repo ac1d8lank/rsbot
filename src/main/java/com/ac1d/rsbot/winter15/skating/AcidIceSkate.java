@@ -28,17 +28,11 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
     public void drawUI(Graphics g) {
         super.drawUI(g);
         if(mManager != null) {
-            g.drawString("Task: " + mManager.currentTask() + " SEG: "+ SkateManager.Segment.ofPlayer(ctx) + " LANE: "+ SkateManager.Lane.ofPlayer(ctx), 20, 20);
+            g.drawString("Task: " + mManager.currentTask() + " SEG: "+ Segment.ofPlayer(ctx) + " LANE: "+ Lane.ofPlayer(ctx), 20, 20);
 
-            for(SkateManager.Lane l : SkateManager.Lane.values()) {
-                new SkateManager.Path(ctx, l).debugDraw(ctx, g);
+            for(Lane l : Lane.values()) {
+                new Path(ctx, l).debugDraw(ctx, g);
             }
         }
     }
-
-    private void drawTile(ClientContext ctx, Graphics g, Tile t) {
-        if(t == null) return;
-        ((Graphics2D)g).draw(t.matrix(ctx).bounds());
-    }
-
 }
