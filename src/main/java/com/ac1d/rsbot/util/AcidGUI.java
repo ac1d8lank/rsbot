@@ -25,8 +25,8 @@ public class AcidGUI {
     private static final Color BACKGROUND = new Color(0f, 0f, 0f, 0.75f);
 
     // Data
-    private static String title = "AcidTest";
-    private static String subtitle = "v1.01";
+    private static String title;
+    private static String subtitle = "by Ac1d8lank";
     private static LinkedHashMap<String, String> data = new LinkedHashMap<>();
 
     public static void setData(String key, Object value) {
@@ -35,7 +35,9 @@ public class AcidGUI {
 
     public static void draw(Graphics2D g) {
         AffineTransform origin = g.getTransform();
+
         g.translate(MARGIN, MARGIN);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         final int w = getWidth(g);
         final int h = getHeight(g);
