@@ -7,8 +7,8 @@ import org.powerbot.script.rt6.ClientContext;
 
 import java.awt.*;
 
-@Script.Manifest(name = "Acid Winter Cooking", description = "Cooks food at winter event")
-public class AcidWinterCooking extends AcidScript<ClientContext> {
+@Script.Manifest(name = "Acid Christmas Cooking", description = "Cooks food at 2015 Christmas Event (For Your Ice Only)", properties = "client=6;hidden=false;vip=false;")
+public class AcidChristmasCooking extends AcidScript<ClientContext> {
     private CookingManager mManager;
 
     @Override

@@ -8,7 +8,7 @@ import org.powerbot.script.rt6.ClientContext;
 
 import java.awt.*;
 
-@Script.Manifest(name = "Acid Ice Skate", description = "Ice Skates at Winter Event")
+@Script.Manifest(name = "Acid Ice Skate", description = "Ice Skates at the 2015 Christmas Event (Live and Let Slide)", properties = "client=6;hidden=false;vip=false;")
 public class AcidIceSkate extends AcidScript<ClientContext> {
     private SkateManager mManager;
 
