@@ -1,7 +1,6 @@
 package com.ac1d.rsbot.xmas15.skating;
 
 import com.ac1d.rsbot.util.*;
-import com.ac1d.rsbot.util.Random;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
 import com.ac1d.rsbot.util.rt6.NpcInteractTask;
 import org.powerbot.script.*;
@@ -39,12 +38,12 @@ public class SkateManager extends TaskManager<ClientContext> {
 
         @Override
         public boolean isReady(ClientContext ctx) {
-            return com.ac1d.rsbot.util.Random.oneIn(100);
+            return RandomUtils.oneIn(100);
         }
 
         @Override
         public void onPoll(ClientContext ctx) throws FailureException {
-            ctx.camera.angle(90 * Random.get(3) + Random.get(-10, 10));
+            ctx.camera.angle(90 * Random.nextInt(0, 3) + Random.nextInt(-10, 10));
             mDone = true;
         }
 
