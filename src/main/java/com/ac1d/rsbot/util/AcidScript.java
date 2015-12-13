@@ -12,6 +12,13 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     private boolean mRunning = false;
 
+    public AcidScript() {
+        Script.Manifest mani = getClass().getAnnotation(Script.Manifest.class);
+        if(mani != null) {
+            AcidGUI.setTitle(mani.name());
+        }
+    }
+
     @Override
     public void start() {
         mRunning = true;
