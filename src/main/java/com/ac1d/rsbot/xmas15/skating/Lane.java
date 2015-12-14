@@ -62,6 +62,10 @@ public enum Lane {
                 return null;
         }
 
+        if(ordinal < 0 || ordinal >= Lane.values().length) {
+            return null;
+        }
+
         return Lane.values()[ordinal];
     }
 }
