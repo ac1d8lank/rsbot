@@ -68,9 +68,13 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         return now - mInteractTime < getInteractDelayMillis();
     }
 
-    private boolean onIdleDelay() {
+    private long getIdle() {
         final long now = System.currentTimeMillis();
-        return now - mIdleStartTime < getIdleDelayMillis();
+        return now - mIdleStartTime;
+    }
+
+    private boolean onIdleDelay() {
+        return getIdle() < getIdleDelayMillis();
     }
 
     /**
@@ -94,7 +98,7 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
 
     @Override
     public String toString() {
-        return "InteractTask["+mAction+" "+mOption+", onIdleDelay="+onIdleDelay()+", onInteractCd="+onInteractCooldown()+"]";
+        return "InteractTask["+mAction+" "+mOption+", onIdleDelay="+onIdleDelay()+"("+getIdle()+"), onInteractCd="+onInteractCooldown()+"]";
     }
 
     protected abstract O getEntity(ClientContext ctx);

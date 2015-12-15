@@ -22,6 +22,8 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
 
         mManager = new SkateManager(ctx);
         mStartXp = ctx.skills.experience(Constants.SKILLS_AGILITY);
+
+
     }
 
     @Override
@@ -37,18 +39,18 @@ public class AcidIceSkate extends AcidScript<ClientContext> {
             final int runMins = (int) (runtime / (60 * 1000)) % 60;
             final int runSecs = (int) (runtime / 1000) % 60;
 
-            AcidGUI.setData("Uptime", String.format("%02d:%02d:%02d", runHours, runMins, runSecs));
+            AcidGUI.setStatus("Uptime", String.format("%02d:%02d:%02d", runHours, runMins, runSecs));
 
             final long xp = ctx.skills.experience(Constants.SKILLS_AGILITY) - mStartXp;
 
-            AcidGUI.setData("XP Gained", xp);
-            AcidGUI.setData("XP/hr", (xp * 60 * 60 * 1000) / runtime);
+            AcidGUI.setStatus("XP Gained", xp);
+            AcidGUI.setStatus("XP/hr", (xp * 60 * 60 * 1000) / runtime);
 
             if(DEBUG) {
-                AcidGUI.setData("Task", mManager.currentTask());
+                AcidGUI.setStatus("Task", mManager.currentTask());
             }
-            AcidGUI.setData("Segment", Segment.ofPlayer(ctx));
-            AcidGUI.setData("Lane", Lane.ofPlayer(ctx));
+            AcidGUI.setStatus("Segment", Segment.ofPlayer(ctx));
+            AcidGUI.setStatus("Lane", Lane.ofPlayer(ctx));
         }
     }
 

@@ -1,8 +1,12 @@
 package com.ac1d.rsbot.util;
 
+import com.ac1d.rsbot.util.gui.*;
+
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AcidGUI {
     private AcidGUI() {}
@@ -14,117 +18,126 @@ public class AcidGUI {
     private static final int MIN_HEIGHT = 10;
 
     // Fonts
-    private static final Font TITLE = new Font("Verdana", Font.BOLD, 20);
-    private static final Font SUBTITLE = new Font("Verdana", Font.BOLD, 10);
-    private static final Font BOLD = new Font("Verdana", Font.BOLD, 14);
-    private static final Font TEXT = new Font("Verdana", Font.PLAIN, 14);
+    public static final Font TITLE = new Font("Verdana", Font.BOLD, 20);
+    public static final Font SUBTITLE = new Font("Verdana", Font.BOLD, 10);
+    public static final Font BOLD = new Font("Verdana", Font.BOLD, 14);
+    public static final Font TEXT = new Font("Verdana", Font.PLAIN, 14);
 
     // Colors
-    private static final Color YELLOW = new Color(.8f, 1f, .2f);
-    private static final Color BACKGROUND = new Color(0f, 0f, 0f, 0.75f);
+    public static final Color ACID = new Color(.8f, 1f, .2f);
+    public static final Color BACKGROUND = new Color(0f, 0f, 0f, 0.75f);
 
     // Data
-    private static String title;
-    private static String subtitle = "by Ac1d8lank";
-    private static LinkedHashMap<String, String> data = new LinkedHashMap<>();
+    private static TitleView title;
 
+    // Layout n Views
+    public static int guiWidth;
+    public static int guiHeight;
+    private static ArrayList<View> views = new ArrayList<>();
+    private static HashMap<String, StatusView> statusViews = new HashMap<>();
+    private static HashMap<View, Rectangle> viewLocations = new HashMap<>();
+
+    static {
+        title = addView(new TitleView("AcidTitle", TITLE));
+        addView(new TitleView("by Ac1d8lank", SUBTITLE));
+    }
 
     public static void setTitle(String title) {
-        AcidGUI.title = title;
-    }
-    public static void setData(String key, Object value) {
-        data.put(key, value != null ? value.toString() : "");
+        AcidGUI.title.setTitle(title);
     }
 
     public static void draw(Graphics2D g) {
+        layout(g);
+
         AffineTransform origin = g.getTransform();
-
-        g.translate(MARGIN, MARGIN);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-        int w = getWidth(g);
-        int h = getHeight(g);
 
         // Box
         g.setColor(BACKGROUND);
-        g.fillRect(0, 0, w, h);
-        g.setColor(YELLOW);
-        g.drawRect(0, 0, w, h);
+        g.fillRect(MARGIN, MARGIN, guiWidth + PADDING * 2, guiHeight + PADDING * 2);
+        g.setColor(ACID);
+        g.drawRect(MARGIN, MARGIN, guiWidth + PADDING * 2, guiHeight + PADDING * 2);
 
-        // Text
-        g.translate(PADDING, PADDING);
-        w -= 2 * PADDING;
-        h -= 2 * PADDING;
+        // Views
+        for(View v : viewLocations.keySet()) {
+            if(!v.isVisible()) continue;
+            g.setTransform(origin);
 
-        // Titles
-        g.setFont(TITLE);
-        g.translate(0, getStringHeight(g, title));
-        g.drawString(title, (w - getStringWidth(g, title)) / 2, 0);
+            Rectangle r = viewLocations.get(v);
+//            g.draw(r);
+            g.translate(r.x, r.y);
 
-        g.setFont(SUBTITLE);
-        g.translate(0, getStringHeight(g, subtitle));
-        g.drawString(subtitle, (w - getStringWidth(g, subtitle)) / 2, 0);
-
-        // Data
-        for(String key : data.keySet()) {
-            final String left = key+": ";
-            g.setFont(BOLD);
-            g.translate(0, getStringHeight(g, left));
-            g.drawString(left, 0, 0);
-
-            final int leftWidth = getStringWidth(g, left);
-            g.setFont(TEXT);
-            g.drawString(data.get(key), leftWidth, 0);
+            v.draw(g);
         }
 
         g.setTransform(origin);
     }
 
-    private static int getWidth(Graphics2D g) {
-        int contentWidth = 0;
+    private static void layout(Graphics2D g) {
+        int x = 0;
+        int y = 0;
+        guiWidth = MIN_WIDTH;
+        guiHeight = MIN_HEIGHT;
 
-        g.setFont(TITLE);
-        contentWidth = Math.max(contentWidth, getStringWidth(g, title));
-        g.setFont(SUBTITLE);
-        contentWidth = Math.max(contentWidth, getStringWidth(g, subtitle));
+        x += MARGIN + PADDING;
+        y += MARGIN + PADDING;
 
-        for(String key : data.keySet()) {
-            int rowWidth = 0;
-            g.setFont(BOLD);
-            rowWidth += getStringWidth(g, key+": ");
-            g.setFont(TEXT);
-            rowWidth += getStringWidth(g, data.get(key));
+        // Sizing pass
+        for(View v : views) {
+            if(!v.isVisible()) continue;
+            final int w = v.getWidth(g);
+            final int h = v.getHeight(g);
 
-            contentWidth = Math.max(contentWidth, rowWidth);
+            guiWidth = Math.max(guiWidth, w);
+            guiHeight += h;
         }
 
-        contentWidth += PADDING * 2;
-        return Math.max(MIN_WIDTH, contentWidth);
-    }
+        // Bounds pass
+        for(View v : views) {
+            if(!v.isVisible()) continue;
+            final int w = v.getWidth(g);
+            final int h = v.getHeight(g);
 
-    private static int getHeight(Graphics2D g) {
-        int contentHeight = 0;
+            final Rectangle r;
+            if(!viewLocations.containsKey(v)) {
+                r = new Rectangle();
+                viewLocations.put(v, r);
+            } else {
+                r = viewLocations.get(v);
+            }
+            r.setBounds(x, y, guiWidth, h);
 
-        contentHeight += 2 * PADDING;
-
-        g.setFont(TITLE);
-        contentHeight += getStringHeight(g, title);
-        g.setFont(SUBTITLE);
-        contentHeight += getStringHeight(g, subtitle);
-
-        g.setFont(BOLD);
-        for(String key : data.keySet()) {
-            contentHeight += getStringHeight(g, key);
+            y += h;
         }
-
-        return Math.max(MIN_HEIGHT, contentHeight);
     }
 
-    private static int getStringHeight(Graphics2D g, String value) {
-        return g.getFontMetrics().getHeight();
+    public static void invalidate() {
+
     }
 
-    private static int getStringWidth(Graphics2D g, String value) {
-        return g.getFontMetrics().stringWidth(value);
+    public static void onMouseEvent(MouseEvent e) {
+        if(e.getID() == MouseEvent.MOUSE_RELEASED) {
+            for(View v : viewLocations.keySet()) {
+                if(viewLocations.get(v).contains(e.getPoint())) {
+                    v.onClick();
+                }
+            }
+        }
+    }
+
+    public static <V extends View> V addView(V view) {
+        views.add(view);
+        if(view instanceof StatusView) {
+            final StatusView sv = (StatusView) view;
+            statusViews.put(sv.getName(), sv);
+        }
+        return view;
+    }
+
+    public static void setStatus(String name, Object value) {
+        if(!statusViews.containsKey(name)) {
+            addView(new StatusView(name));
+        }
+        String str = value == null ? "" : value.toString();
+        statusViews.get(name).setValue(str);
     }
 }
