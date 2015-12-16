@@ -3,7 +3,6 @@ package com.ac1d.rsbot.xmas15.cooking;
 import com.ac1d.rsbot.util.AcidGUI;
 import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.TaskManager;
-import com.sun.tools.internal.jxc.apt.Const;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
