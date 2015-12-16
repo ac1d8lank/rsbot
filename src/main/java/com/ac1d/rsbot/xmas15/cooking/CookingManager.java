@@ -1,9 +1,10 @@
 package com.ac1d.rsbot.xmas15.cooking;
 
-import com.ac1d.rsbot.util.Random;
+import com.ac1d.rsbot.util.RandomUtils;
 import com.ac1d.rsbot.util.Task;
 import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
+import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 
 import java.util.ArrayList;
@@ -65,12 +66,12 @@ public class CookingManager extends TaskManager<ClientContext> {
 
         @Override
         public boolean isReady(ClientContext ctx) {
-            return Random.oneIn(100);
+            return RandomUtils.oneIn(100);
         }
 
         @Override
         public void onPoll(ClientContext ctx) throws FailureException {
-            ctx.camera.angle(Random.get(359));
+            ctx.camera.angle(Random.nextInt(0, 359));
             mDone = true;
         }
 
