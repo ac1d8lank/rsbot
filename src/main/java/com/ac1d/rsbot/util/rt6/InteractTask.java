@@ -99,9 +99,6 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
     @Override
     public boolean isDone(ClientContext ctx) {
         boolean done = !onInteractCooldown() && !onIdleDelay() && ctx.players.local().idle() && mInteracted;
-        if(done) {
-            System.out.println(this);
-        }
         return done;
     }
 
