@@ -15,7 +15,7 @@ public class ObjectInteractTask extends InteractTask<GameObject> {
     }
 
     @Override
-    protected final GameObject getEntity(ClientContext ctx) {
+    protected final GameObject findEntity(ClientContext ctx) {
         return getObject(ctx, mId);
     }
 
@@ -25,7 +25,7 @@ public class ObjectInteractTask extends InteractTask<GameObject> {
     }
 
     @Override
-    public void debugDraw(ClientContext ctx, Graphics g) {
+    public void debugDraw(ClientContext ctx, Graphics2D g) {
         g.setColor(Color.yellow);
         ((Graphics2D)g).draw(getObject(ctx, mId).tile().matrix(ctx).bounds());
     }

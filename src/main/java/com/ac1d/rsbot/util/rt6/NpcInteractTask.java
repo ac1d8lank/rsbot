@@ -18,7 +18,7 @@ public class NpcInteractTask extends InteractTask<Npc> {
     }
 
     @Override
-    protected Npc getEntity(ClientContext ctx) {
+    protected Npc findEntity(ClientContext ctx) {
         return getNpc(ctx, mIds);
     }
 
@@ -34,7 +34,7 @@ public class NpcInteractTask extends InteractTask<Npc> {
 
 
     @Override
-    public void debugDraw(ClientContext ctx, Graphics g) {
+    public void debugDraw(ClientContext ctx, Graphics2D g) {
         g.setColor(Color.yellow);
         getNpc(ctx, mIds).draw(g);
     }

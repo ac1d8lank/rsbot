@@ -29,7 +29,7 @@ public abstract class Task<C extends ClientContext> {
     /**
      * Draws debug info for this task when running
      */
-    public void debugDraw(C ctx, Graphics g) {}
+    public void debugDraw(C ctx, Graphics2D g) {}
 
     /**
      * @return true if the Task has completed

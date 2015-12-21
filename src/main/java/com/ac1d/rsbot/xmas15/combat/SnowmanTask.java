@@ -6,6 +6,8 @@ import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 
+import java.awt.Graphics2D;
+
 public class SnowmanTask extends InteractTask<GameObject> {
 
     public static final int[] STAGE_IDS = {
@@ -43,7 +45,7 @@ public class SnowmanTask extends InteractTask<GameObject> {
     }
 
     @Override
-    protected GameObject getEntity(ClientContext ctx) {
+    protected GameObject findEntity(ClientContext ctx) {
         return ctx.objects.select()
                 .select(mFilter)
                 .id(mIds)
@@ -51,8 +53,13 @@ public class SnowmanTask extends InteractTask<GameObject> {
     }
 
     @Override
+    public boolean isDone(ClientContext ctx) {
+        return !mFilter.accept(getEntity()) || super.isDone(ctx);
+    }
+
+    @Override
     protected long getIdleDelayMillis() {
-        return 6000;
+        return 4000;
     }
 
     @Override

@@ -11,7 +11,8 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
     private String mAction;
     private String mOption;
 
-    private boolean mDone;
+    private O mObj;
+    private boolean mInteracted;
     private long mInteractTime;
     private long mIdleStartTime;
 
@@ -22,37 +23,41 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
 
     @Override
     public boolean isReady(ClientContext ctx) {
-        return getEntity(ctx).valid();
+        if(!ctx.players.local().idle()) {
+            return false;
+        }
+        mObj = findEntity(ctx);
+        return mObj.valid();
     }
 
     @Override
     public void onStart(ClientContext ctx) {
         super.onStart(ctx);
-        mDone = false;
+        mInteracted = false;
+        mIdleStartTime = System.currentTimeMillis();
     }
 
     @Override
     public void onPoll(ClientContext ctx) throws FailureException {
-        O obj = getEntity(ctx);
-        if(!obj.valid()) {
+        if(!mObj.valid()) {
             throw new Task.FailureException();
         }
-        if(obj instanceof Locatable && (RandomUtils.percent(15) || !obj.inViewport())) {
-            ctx.camera.turnTo((Locatable)obj);
-            return;
-        }
-        final boolean idle = ctx.players.local().idle();
 
-        if(!idle) {
+        if(!ctx.players.local().idle()) {
             mIdleStartTime = System.currentTimeMillis();
         }
 
-        if((idle || getIdleDelayMillis() == 0) && !onInteractCooldown() && !onIdleDelay()) {
-            if(interact(obj, mAction, mOption)) {
+        if(mObj instanceof Locatable && (RandomUtils.percent(15) || !mObj.inViewport())) {
+            ctx.camera.turnTo((Locatable)mObj);
+            return;
+        }
+
+        if(!onInteractCooldown() && !onIdleDelay()) {
+            if(interact(mObj, mAction, mOption)) {
                 mInteractTime = System.currentTimeMillis();
-                afterInteract(obj);
+                afterInteract(mObj);
             }
-            mDone = true;
+            mInteracted = true;
         }
     }
 
@@ -93,7 +98,15 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
 
     @Override
     public boolean isDone(ClientContext ctx) {
-        return !onInteractCooldown() && !onIdleDelay() && ctx.players.local().idle() && mDone;
+        boolean done = !onInteractCooldown() && !onIdleDelay() && ctx.players.local().idle() && mInteracted;
+        if(done) {
+            System.out.println(this);
+        }
+        return done;
+    }
+
+    protected final O getEntity() {
+        return mObj;
     }
 
     @Override
@@ -101,5 +114,5 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
         return "InteractTask["+mAction+" "+mOption+", onIdleDelay="+onIdleDelay()+"("+getIdle()+"), onInteractCd="+onInteractCooldown()+"]";
     }
 
-    protected abstract O getEntity(ClientContext ctx);
+    protected abstract O findEntity(ClientContext ctx);
 }

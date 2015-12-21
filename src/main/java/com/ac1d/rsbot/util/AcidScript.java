@@ -10,8 +10,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     private Task<C> mCurrentTask;
 
-    private long mPollCount = 0;
-
     private boolean mRunning = false;
 
     public AcidScript() {
@@ -43,8 +41,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public final void poll() {
-        mPollCount++;
-
         final TaskManager<C> manager = getTaskManager();
         if(manager == null) {
             return;
@@ -140,6 +136,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     public Task<C> getNextTask(TaskManager<C> manager) {
         // TODO: skip tasks if they are unfinished, but don't get caught in a loop if all are invalid
+        System.out.println("Getting new task.");
         return manager.nextTask();
     }
 }

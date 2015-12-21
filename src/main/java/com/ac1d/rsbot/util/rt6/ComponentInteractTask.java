@@ -21,7 +21,7 @@ public class ComponentInteractTask extends InteractTask<Component> {
     }
 
     @Override
-    protected Component getEntity(ClientContext ctx) {
+    protected Component findEntity(ClientContext ctx) {
         final Widget w = ctx.widgets.widget(mWidget);
         Component c = null;
         for (int cId : mComponents) {
