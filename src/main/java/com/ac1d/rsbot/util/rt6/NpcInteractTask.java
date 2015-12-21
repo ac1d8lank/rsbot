@@ -34,7 +34,7 @@ public class NpcInteractTask extends InteractTask<Npc> {
 
 
     @Override
-    public void debugDraw(ClientContext ctx, Graphics2D g) {
+    public void onDraw(ClientContext ctx, Graphics2D g) {
         g.setColor(Color.yellow);
         getNpc(ctx, mIds).draw(g);
     }

@@ -6,6 +6,8 @@ import org.powerbot.script.Interactive;
 import org.powerbot.script.Locatable;
 import org.powerbot.script.rt6.ClientContext;
 
+import java.awt.Graphics2D;
+
 public abstract class InteractTask<O extends Interactive> extends Task<ClientContext> {
 
     private String mAction;
@@ -58,6 +60,16 @@ public abstract class InteractTask<O extends Interactive> extends Task<ClientCon
                 afterInteract(mObj);
             }
             mInteracted = true;
+        }
+    }
+
+    @Override
+    public void onDraw(ClientContext ctx, Graphics2D g) {
+        super.onDraw(ctx, g);
+
+        // Also update idle time in draw, as it happens waaaaay more often and is more accurate.
+        if(!ctx.players.local().idle()) {
+            mIdleStartTime = System.currentTimeMillis();
         }
     }
 

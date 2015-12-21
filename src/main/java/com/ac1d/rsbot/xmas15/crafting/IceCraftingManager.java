@@ -7,6 +7,7 @@ import org.powerbot.script.MessageEvent;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -23,7 +24,6 @@ public class IceCraftingManager extends TaskManager<ClientContext> {
 
     private long mLastTiredMessage;
     private Task<ClientContext> mCraftTask = new InteractTask<GameObject>("Craft", "Ice block") {
-        public long mmLastIdleTime;
         public long mmStartTime;
 
         @Override
@@ -33,17 +33,8 @@ public class IceCraftingManager extends TaskManager<ClientContext> {
         }
 
         @Override
-        public void onPoll(ClientContext ctx) throws FailureException {
-            super.onPoll(ctx);
-            if(ctx.players.local().idle()) {
-                mmLastIdleTime = System.currentTimeMillis();
-            }
-        }
-
-        @Override
         public boolean isDone(ClientContext ctx) {
-            final long now = System.currentTimeMillis();
-            return (now - mmLastIdleTime > 3000 || mLastTiredMessage > mmStartTime) && super.isDone(ctx);
+            return mLastTiredMessage > mmStartTime || super.isDone(ctx);
         }
 
         @Override

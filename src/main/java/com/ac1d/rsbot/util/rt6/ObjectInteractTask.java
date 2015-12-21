@@ -25,7 +25,7 @@ public class ObjectInteractTask extends InteractTask<GameObject> {
     }
 
     @Override
-    public void debugDraw(ClientContext ctx, Graphics2D g) {
+    public void onDraw(ClientContext ctx, Graphics2D g) {
         g.setColor(Color.yellow);
         ((Graphics2D)g).draw(getObject(ctx, mId).tile().matrix(ctx).bounds());
     }

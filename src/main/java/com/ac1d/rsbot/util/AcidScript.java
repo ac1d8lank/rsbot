@@ -95,7 +95,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         onGUI();
         onDraw(g2d);
         if(mCurrentTask != null) {
-            mCurrentTask.debugDraw(ctx, g2d);
+            mCurrentTask.onDraw(ctx, g2d);
         }
     }
 
