@@ -11,6 +11,7 @@ import org.powerbot.script.rt6.Constants;
 public class AcidIceCrafting extends AcidScript<ClientContext> {
     private TaskManager<ClientContext> mManager;
     private int mStartXp;
+    private int mLastXp;
 
     @Override
     public void start() {
@@ -31,17 +32,31 @@ public class AcidIceCrafting extends AcidScript<ClientContext> {
 
         if (mManager != null) {
             final long runtime = Math.max(0, ctx.controller.script().getRuntime());
-            final int runHours = (int) (runtime / (60 * 60 * 1000));
-            final int runMins = (int) (runtime / (60 * 1000)) % 60;
-            final int runSecs = (int) (runtime / 1000) % 60;
 
-            AcidGUI.setStatus("Uptime", String.format("%02d:%02d:%02d", runHours, runMins, runSecs));
+            AcidGUI.setStatus("Uptime", formatMillis(runtime));
 
-            final long xp = ctx.skills.experience(Constants.SKILLS_CRAFTING) - mStartXp;
+            final int xp = ctx.skills.experience(Constants.SKILLS_CRAFTING);
+            if(xp != mLastXp) {
+                mLastXp = xp;
+                final long xpSoFar = xp - mStartXp;
 
-            AcidGUI.setStatus("XP Gained", xp);
-            AcidGUI.setStatus("XP/hr", (xp * 60 * 60 * 1000) / runtime);
+                AcidGUI.setStatus("XP Gained", xpSoFar);
+                AcidGUI.setStatus("XP/hr", (xpSoFar * 60 * 60 * 1000) / runtime);
+
+                int nextLevel = ctx.skills.level(Constants.SKILLS_CRAFTING) + 1;
+                final long xpToNext = ctx.skills.experienceAt(nextLevel) - xp;
+                final long timeToNext = (xpToNext * runtime) / xpSoFar;
+                AcidGUI.setStatus("Next Level", nextLevel + " in " + formatMillis(timeToNext));
+            }
+
             AcidGUI.setStatus("Task", mManager.currentTask());
         }
+    }
+
+    private static String formatMillis(long millis) {
+        final int hours = (int) (millis / (60 * 60 * 1000));
+        final int mins = (int) (millis / (60 * 1000)) % 60;
+        final int secs = (int) (millis / 1000) % 60;
+        return String.format("%02d:%02d:%02d", hours, mins, secs);
     }
 }
