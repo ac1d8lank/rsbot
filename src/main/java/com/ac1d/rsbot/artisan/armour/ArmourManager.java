@@ -19,8 +19,8 @@ public class ArmourManager extends TaskManager<ClientContext> {
     public List<Task<ClientContext>> getAvailableTasks() {
         ArrayList<Task<ClientContext>> tasks = new ArrayList<>();
 
-        final boolean hasIngots = hasIngots();
-        final boolean hasArmour = hasArmour();
+        final boolean hasIngots = hasIngots(ctx);
+        final boolean hasArmour = hasArmour(ctx);
 
         if(hasIngots) {
             final BurialArmour.Piece instruction = BurialArmour.getInstruction(ctx);
@@ -29,17 +29,17 @@ public class ArmourManager extends TaskManager<ClientContext> {
                 // Change Selection
                 tasks.add(mButtonTasks.get(instruction));
             }
-            if(!isInteracting()) {
+            if(!isInteracting(ctx)) {
                 // Interact with anvil
                 tasks.add(ArmourObject.ANVIL.task);
             }
         } else if(hasArmour) {
             // Deposit armor
             tasks.add(ArmourObject.CHUTE.task);
-        } else if(!isSmelterOpen()) {
+        } else if(!isSmelterOpen(ctx)) {
             // Open Smelter
             tasks.add(ArmourObject.SMELTER.task);
-        } else if(canSmelt()) {
+        } else if(canSmelt(ctx)) {
             // Click Smelt
             tasks.add(mSmeltTask);
         } else {
@@ -52,26 +52,26 @@ public class ArmourManager extends TaskManager<ClientContext> {
 
     // States
 
-    private boolean canSmelt() {
+    public static boolean canSmelt(ClientContext ctx) {
         Component smeltDisabledBg = ctx.widgets.component(1370, 39);
         return smeltDisabledBg.valid() && !smeltDisabledBg.visible();
     }
 
-    private boolean isSmelterOpen() {
+    public static boolean isSmelterOpen(ClientContext ctx) {
         Component smeltButton = ctx.widgets.component(1370, 38);
         return smeltButton.valid() && smeltButton.visible();
     }
 
-    private boolean isInteracting() {
+    public static boolean isInteracting(ClientContext ctx) {
         Component cancelButton = ctx.widgets.component(1251, 49);
         return cancelButton.valid() && cancelButton.visible();
     }
 
-    private boolean hasIngots() {
+    public static boolean hasIngots(ClientContext ctx) {
         return ctx.backpack.select().id(BurialArmour.ALL_INGOTS).count() > 0;
     }
 
-    private boolean hasArmour() {
+    public static boolean hasArmour(ClientContext ctx) {
         return ctx.backpack.select().id(BurialArmour.ALL_ITEMS).count() > 0;
     }
 
@@ -80,7 +80,7 @@ public class ArmourManager extends TaskManager<ClientContext> {
     private final Task<ClientContext> mSmeltTask = new Task<ClientContext>() {
         @Override
         public boolean isReady(ClientContext ctx) {
-            return canSmelt();
+            return canSmelt(ctx);
         }
 
         @Override
@@ -90,7 +90,7 @@ public class ArmourManager extends TaskManager<ClientContext> {
 
         @Override
         public boolean isDone(ClientContext ctx) {
-            return !isSmelterOpen() || hasIngots() || !canSmelt();
+            return !isSmelterOpen(ctx) || hasIngots(ctx) || !canSmelt(ctx);
         }
     };
 
@@ -107,6 +107,11 @@ public class ArmourManager extends TaskManager<ClientContext> {
 
         @Override
         public boolean isDone(ClientContext ctx) {
+            final BurialArmour.Piece instruction = BurialArmour.getInstruction(ctx);
+            final BurialArmour.Piece selected = BurialArmour.getSelected(ctx);
+            if(instruction == selected) {
+                return true;
+            }
             return super.isDone(ctx);
         }
     }
