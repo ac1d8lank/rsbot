@@ -3,6 +3,7 @@ package com.ac1d.rsbot.artisan.armour;
 import com.ac1d.rsbot.util.AcidGUI;
 import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.TaskManager;
+import com.ac1d.rsbot.util.stats.StatTrak;
 import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
@@ -13,6 +14,7 @@ public class AcidArmour extends AcidScript<ClientContext> {
     private ArmourManager mManager;
     private int mLastXp;
     private int mStartXp;
+    private int mLastBarCount;
 
     @Override
     public void start() {
@@ -35,6 +37,10 @@ public class AcidArmour extends AcidScript<ClientContext> {
 
             AcidGUI.setStatus("Uptime", formatMillis(runtime));
 
+            AcidGUI.setStatus("Instruction", BurialArmour.getInstruction(ctx));
+            AcidGUI.setStatus("Working On", BurialArmour.getSelected(ctx));
+
+            // XP Calcs
             final int xp = ctx.skills.experience(Constants.SKILLS_SMITHING);
             if(xp != mLastXp) {
                 mLastXp = xp;
@@ -49,9 +55,16 @@ public class AcidArmour extends AcidScript<ClientContext> {
                 AcidGUI.setStatus("Next Level", nextLevel + " in " + formatMillis(timeToNext));
             }
 
-            AcidGUI.setStatus("Task", mManager.currentTask());
-            AcidGUI.setStatus("Instruction", BurialArmour.getInstruction(ctx));
-            AcidGUI.setStatus("Working On", BurialArmour.getSelected(ctx));
+            // Track # of pieces made
+            int barCount = ctx.backpack.select().id(BurialArmour.ALL_INGOTS).count();
+            if(barCount != mLastBarCount) {
+                if(barCount < mLastBarCount) {
+                    StatTrak.addEvent("piece", mLastBarCount-barCount);
+                    AcidGUI.setStatus("Pieces Made", StatTrak.TOTAL.getTotal("piece"));
+                    AcidGUI.setStatus("Pieces/hr", StatTrak.HOURLY.getAverage("piece"));
+                }
+                mLastBarCount = barCount;
+            }
         }
     }
 
