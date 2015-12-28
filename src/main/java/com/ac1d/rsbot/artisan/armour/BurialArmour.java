@@ -72,6 +72,19 @@ public class BurialArmour {
 
     public static int getItemId(Tier tier, Piece piece, Metal metal) {
         int id = FIRST_PIECE_ID;
+        // FIXME: figure out why these numbers diverge. Is it just tier 3 maybe?
+        if(tier == Tier.SMITH && metal == Metal.ADAMANT) {
+            switch(piece) {
+                case HELM:
+                    return 20615;
+                case CHESTPLATE:
+                    return 20625;
+                case GAUNTLETS:
+                    return 20630;
+                case BOOTS:
+                    return 20620;
+            }
+        }
         id += tier.ordinal() * (Metal.values().length + Piece.values().length);
         id += piece.ordinal() * Metal.values().length;
         id += metal.ordinal();
