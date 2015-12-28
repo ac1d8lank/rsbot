@@ -8,7 +8,7 @@ import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
 
-@Script.Manifest(name = "AcidArmour", description = "Automate Burial Armour in the Artisan Workshop!")
+@Script.Manifest(name = "AcidArmour", description = "Makes Burial Armour in the Artisan Workshop!", properties = "client=6;hidden=false;vip=false;")
 public class AcidArmour extends AcidScript<ClientContext> {
 
     private ArmourManager mManager;

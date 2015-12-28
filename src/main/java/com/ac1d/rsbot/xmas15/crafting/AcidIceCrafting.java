@@ -7,7 +7,7 @@ import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
 
-@Script.Manifest(name = "AcidIceCrafting", description = "Crafts ice scultures at 2015 Christmas event.")
+@Script.Manifest(name = "AcidIceCrafting", description = "Crafts ice sculptures at 2015 Christmas event.", properties = "client=6;hidden=false;vip=false")
 public class AcidIceCrafting extends AcidScript<ClientContext> {
     private TaskManager<ClientContext> mManager;
     private int mStartXp;

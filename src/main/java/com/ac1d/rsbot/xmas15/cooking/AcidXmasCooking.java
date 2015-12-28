@@ -7,9 +7,7 @@ import org.powerbot.script.Script;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Constants;
 
-import java.awt.*;
-
-@Script.Manifest(name = "AcidXmasCooking", description = "Cooks food at 2015 Christmas Event (For Your Ice Only)", properties = "client=6;hidden=false;vip=false;")
+@Script.Manifest(name = "AcidXmasCooking", description = "Cooks food at 2015 Christmas Event (For Your Ice Only)", properties = "client=6;hidden=true;vip=false;")
 public class AcidXmasCooking extends AcidScript<ClientContext> {
     private CookingManager mManager;
     private int mStartXp;

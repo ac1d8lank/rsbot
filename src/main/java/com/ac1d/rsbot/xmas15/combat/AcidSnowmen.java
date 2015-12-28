@@ -11,7 +11,7 @@ import org.powerbot.script.rt6.Constants;
 
 import java.util.HashMap;
 
-@Script.Manifest(name = "AcidSnowmen", properties = "Build snowmen at 2015 Christmas Event", description = "")
+@Script.Manifest(name = "AcidSnowmen", properties = "Build snowmen at 2015 Christmas Event", description = "client=6;hidden=true;vip=false")
 public class AcidSnowmen extends AcidScript<ClientContext> {
     private static final boolean DEBUG = false;
     private SnowmenManager mManager;
