@@ -13,7 +13,7 @@ public class GroundItemInteractTask extends InteractTask<GroundItem>{
     }
 
     @Override
-    protected final GroundItem getEntity(ClientContext ctx) {
+    protected final GroundItem findEntity(ClientContext ctx) {
         return getGroundItem(ctx, mId);
     }
 

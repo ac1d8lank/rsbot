@@ -3,12 +3,12 @@ package com.ac1d.rsbot.util;
 import org.powerbot.script.*;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener {
+public abstract class AcidScript<C extends ClientContext> extends PollingScript<C> implements PaintListener, MessageListener, MouseListener {
 
     private Task<C> mCurrentTask;
-
-    private long mPollCount = 0;
 
     private boolean mRunning = false;
 
@@ -41,8 +41,6 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public final void poll() {
-        mPollCount++;
-
         final TaskManager<C> manager = getTaskManager();
         if(manager == null) {
             return;
@@ -97,8 +95,34 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
         onGUI();
         onDraw(g2d);
         if(mCurrentTask != null) {
-            mCurrentTask.debugDraw(ctx, g2d);
+            mCurrentTask.onDraw(ctx, g2d);
         }
+    }
+
+    // Why, AWT?
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        AcidGUI.onMouseEvent(e);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        AcidGUI.onMouseEvent(e);
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        AcidGUI.onMouseEvent(e);
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        AcidGUI.onMouseEvent(e);
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        AcidGUI.onMouseEvent(e);
     }
 
     public void onGUI() {
@@ -112,6 +136,7 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     public Task<C> getNextTask(TaskManager<C> manager) {
         // TODO: skip tasks if they are unfinished, but don't get caught in a loop if all are invalid
+        System.out.println("Getting new task.");
         return manager.nextTask();
     }
 }
