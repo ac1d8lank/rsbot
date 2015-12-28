@@ -49,7 +49,7 @@ public class AcidArmour extends AcidScript<ClientContext> {
                 AcidGUI.setStatus("XP Gained", xpSoFar);
                 AcidGUI.setStatus("XP/hr", (xpSoFar * 60 * 60 * 1000) / runtime);
 
-                int nextLevel = ctx.skills.level(Constants.SKILLS_SMITHING) + 1;
+                int nextLevel = ctx.skills.realLevel(Constants.SKILLS_SMITHING) + 1;
                 final long xpToNext = ctx.skills.experienceAt(nextLevel) - xp;
                 final long timeToNext = (xpToNext * runtime) / xpSoFar;
                 AcidGUI.setStatus("Next Level", nextLevel + " in " + formatMillis(timeToNext));
