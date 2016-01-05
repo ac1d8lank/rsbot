@@ -16,6 +16,15 @@ public class ComponentInteractTask extends InteractTask<Component> {
     }
 
     @Override
+    protected boolean interact(Component obj, String action, String option) {
+        if(action == null) {
+            return obj.click();
+        } else {
+            return super.interact(obj, action, option);
+        }
+    }
+
+    @Override
     protected long getIdleDelayMillis() {
         return 0;
     }
