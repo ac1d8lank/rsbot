@@ -1,6 +1,7 @@
 package com.ac1d.rsbot.temp.portables;
 
 import org.powerbot.script.Script;
+import org.powerbot.script.rt6.Constants;
 
 @Script.Manifest(name = "AAFletch", description = "Fletches.")
 public class AcidFletch extends AcidPortables {
@@ -11,6 +12,7 @@ public class AcidFletch extends AcidPortables {
             portId = 98285;
             portAction = "Fletch";
             portOption = "Portable fletcher";
+            skill = Constants.SKILLS_FLETCHING;
         }};
     }
 }

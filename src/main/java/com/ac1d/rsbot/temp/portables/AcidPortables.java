@@ -1,18 +1,25 @@
 package com.ac1d.rsbot.temp.portables;
 
+import com.ac1d.rsbot.util.AcidGUI;
 import com.ac1d.rsbot.util.AcidScript;
 import com.ac1d.rsbot.util.TaskManager;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.Constants;
 
 public abstract class AcidPortables extends AcidScript<ClientContext> {
 
     private PortableManager mManager;
+    private int mLastXp;
+    private int mStartXp;
+    private PortableConfig config;
 
     @Override
     public void start() {
         super.start();
 
-        mManager = new PortableManager(ctx, getPortableConfig());
+        config = getPortableConfig();
+        mManager = new PortableManager(ctx, config);
+        mStartXp = ctx.skills.experience(config.skill);
     }
 
     protected abstract PortableConfig getPortableConfig();
@@ -22,8 +29,43 @@ public abstract class AcidPortables extends AcidScript<ClientContext> {
         return mManager;
     }
 
+    @Override
+    public void onGUI() {
+        super.onGUI();
+
+        if (mManager != null) {
+            final long runtime = Math.max(0, ctx.controller.script().getRuntime());
+
+            AcidGUI.setStatus("Uptime", formatMillis(runtime));
+
+            final int xp = ctx.skills.experience(config.skill);
+            if(xp != mLastXp) {
+                mLastXp = xp;
+                final long xpSoFar = xp - mStartXp;
+
+                AcidGUI.setStatus("XP Gained", xpSoFar);
+                AcidGUI.setStatus("XP/hr", (xpSoFar * 60 * 60 * 1000) / runtime);
+
+                int nextLevel = ctx.skills.level(config.skill) + 1;
+                final long xpToNext = ctx.skills.experienceAt(nextLevel) - xp;
+                final long timeToNext = (xpToNext * runtime) / xpSoFar;
+                AcidGUI.setStatus("Next Level", nextLevel + " in " + formatMillis(timeToNext));
+            }
+
+            AcidGUI.setStatus("Task", mManager.currentTask());
+        }
+    }
+
+    private static String formatMillis(long millis) {
+        final int hours = (int) (millis / (60 * 60 * 1000));
+        final int mins = (int) (millis / (60 * 1000)) % 60;
+        final int secs = (int) (millis / 1000) % 60;
+        return String.format("%02d:%02d:%02d", hours, mins, secs);
+    }
+
     public static class PortableConfig {
         public int[]  itemIds;
+        public int    skill;
         public int    portId;
         public String portAction;
         public String portOption;

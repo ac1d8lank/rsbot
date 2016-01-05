@@ -1,6 +1,7 @@
 package com.ac1d.rsbot.temp.portables;
 
 import org.powerbot.script.Script;
+import org.powerbot.script.rt6.Constants;
 
 @Script.Manifest(name = "AAHerb", description = "Temp herb")
 public class AcidHerb extends AcidPortables {
@@ -11,6 +12,7 @@ public class AcidHerb extends AcidPortables {
             portId = 89770;
             portAction = "Mix Potions";
             portOption = "Portable well";
+            skill = Constants.SKILLS_HERBLORE;
         }}  ;
     }
 }
