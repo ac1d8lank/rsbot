@@ -72,8 +72,8 @@ public abstract class StatTrak {
             return (int) ((count(events) * interval) / (now - oldest.timestamp));
         }
 
-        private synchronized int count(Queue<Event> events) {
-            int total = 0;
+        private synchronized long count(Queue<Event> events) {
+            long total = 0;
             for(Event e : events) {
                 total += e.count;
             }

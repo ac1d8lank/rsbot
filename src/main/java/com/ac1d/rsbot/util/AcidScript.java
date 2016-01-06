@@ -1,6 +1,9 @@
 package com.ac1d.rsbot.util;
 
+import com.ac1d.rsbot.util.stats.SkillTrak;
 import org.powerbot.script.*;
+import org.powerbot.script.ClientContext;
+import org.powerbot.script.rt6.*;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -41,6 +44,10 @@ public abstract class AcidScript<C extends ClientContext> extends PollingScript<
 
     @Override
     public final void poll() {
+        if(ctx instanceof org.powerbot.script.rt6.ClientContext) {
+            SkillTrak.onPoll((org.powerbot.script.rt6.ClientContext)ctx);
+        }
+
         final TaskManager<C> manager = getTaskManager();
         if(manager == null) {
             return;
