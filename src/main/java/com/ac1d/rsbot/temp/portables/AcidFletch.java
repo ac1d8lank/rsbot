@@ -8,7 +8,7 @@ public class AcidFletch extends AcidPortables {
     @Override
     protected PortableConfig getPortableConfig() {
         return new PortableConfig() {{
-            itemIds = new int[] {1519};
+            itemIds = new int[] {1519, 1517, 1515};
             portId = 98285;
             portAction = "Fletch";
             portOption = "Portable fletcher";
