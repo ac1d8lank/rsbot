@@ -9,8 +9,6 @@ import org.powerbot.script.rt6.ClientContext;
 public abstract class AcidPortables extends AcidScript<ClientContext> {
 
     private PortableManager mManager;
-    private int mLastXp;
-    private int mStartXp;
     private PortableConfig config;
 
     @Override
@@ -19,7 +17,6 @@ public abstract class AcidPortables extends AcidScript<ClientContext> {
 
         config = getPortableConfig();
         mManager = new PortableManager(ctx, config);
-        mStartXp = ctx.skills.experience(config.skill);
     }
 
     protected abstract PortableConfig getPortableConfig();

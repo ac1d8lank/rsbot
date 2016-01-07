@@ -27,7 +27,7 @@ public class PortableManager extends TaskManager<ClientContext>{
         boolean craftingOpen = ctx.widgets.component(1370, 38).visible();
         boolean progressOpen = ctx.widgets.component(1251, 8).visible();
 
-        if(hasItems) {
+        if(hasItems && !ctx.bank.opened()) {
             if(progressOpen) {
                 // Do Nothing, it's working.
             } else if(craftingOpen) {

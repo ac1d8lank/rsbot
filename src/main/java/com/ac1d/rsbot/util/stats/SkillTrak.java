@@ -65,7 +65,8 @@ public abstract class SkillTrak {
         if(!sLastDrawn.containsKey(skill) || sLastDrawn.get(skill) != total) {
             AcidGUI.setStatus("XP Gained", total);
             AcidGUI.setStatus("XP/hr", getHourly(skill));
-            AcidGUI.setStatus("Next Level", timeUntilNext(ctx, skill));
+            final int nextLevel = ctx.skills.realLevel(skill)+1;
+            AcidGUI.setStatus("Next Level", timeUntilNext(ctx, skill)+" until "+nextLevel);
             sLastDrawn.put(skill, total);
         }
     }
