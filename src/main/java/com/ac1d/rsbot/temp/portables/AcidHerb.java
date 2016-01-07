@@ -8,7 +8,7 @@ public class AcidHerb extends AcidPortables {
     @Override
     protected PortableConfig getPortableConfig() {
         return new PortableConfig() {{
-            itemIds = new int[] {3018};
+            itemIds = new int[] {3018, 157};
             portId = 89770;
             portAction = "Mix Potions";
             portOption = "Portable well";
