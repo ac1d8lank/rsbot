@@ -68,6 +68,9 @@ public abstract class StatTrak {
             }
 
             final long now = System.currentTimeMillis();
+            if(now == oldest.timestamp) {
+                return 0;
+            }
 
             return (int) ((count(events) * interval) / (now - oldest.timestamp));
         }
