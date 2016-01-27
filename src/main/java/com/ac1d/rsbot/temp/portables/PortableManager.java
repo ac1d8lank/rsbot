@@ -5,6 +5,7 @@ import com.ac1d.rsbot.util.TaskManager;
 import com.ac1d.rsbot.util.rt6.ComponentInteractTask;
 import com.ac1d.rsbot.util.rt6.ObjectInteractTask;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.GameObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,12 @@ public class PortableManager extends TaskManager<ClientContext>{
         super(ctx);
         this.config = config;
 
-        CLICK_PORT = new ObjectInteractTask(config.portId, config.portAction, config.portOption);
+        CLICK_PORT = new ObjectInteractTask(config.portId, config.portAction, config.portOption) {
+            @Override
+            protected boolean interact(GameObject obj, String action, String option) {
+                return obj.click();
+            }
+        };
     }
 
     @Override
